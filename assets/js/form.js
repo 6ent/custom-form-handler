@@ -26,14 +26,19 @@
         var fill = wrap.querySelector('.cfh-progress-fill');
         var counter = wrap.querySelector('.cfh-step-counter');
         var errorBox = wrap.querySelector('.cfh-error-msg');
+        var modal = wrap.querySelector('.cfh-modal');
+        var modalMessage = wrap.querySelector('.cfh-modal__message');
+        var modalCloseButtons = Array.from(wrap.querySelectorAll('[data-cfh-modal-close]'));
         var submitBtn = form ? form.querySelector('.cfh-btn--submit') : null;
         var formType = wrap.dataset.formType || 'window';
         var sessionKey = buildSessionKey(formType, instanceIndex);
-        var errorMessages = parseErrorMessages(wrap.dataset.errorMessages);
+        var inlineErrorMessages = parseErrorMessages(wrap.dataset.inlineErrorMessages);
+        var popupErrorMessages = parseErrorMessages(wrap.dataset.popupErrorMessages);
 
         if (!form || steps.length === 0) return;
 
         var currentIndex = 0;
+        var previousActiveElement = null;
 
         restoreState();
 
@@ -96,6 +101,12 @@
                 submitBtn.textContent = 'Wird gesendet...';
             }
         });
+
+        modalCloseButtons.forEach(function (button) {
+            button.addEventListener('click', closeModal);
+        });
+
+        document.addEventListener('keydown', handleDocumentKeydown);
 
         function advance() {
             if (!validateStep(currentIndex)) {
@@ -201,6 +212,37 @@
             errorBox.textContent = '';
         }
 
+        function openModal(message) {
+            if (!modal || !modalMessage) return;
+
+            previousActiveElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+            modalMessage.textContent = message;
+            modal.hidden = false;
+            document.body.classList.add('cfh-modal-open');
+
+            var focusTarget = modal.querySelector('.cfh-modal__button, .cfh-modal__close');
+            if (focusTarget instanceof HTMLElement) {
+                focusTarget.focus();
+            }
+        }
+
+        function closeModal() {
+            if (!modal || modal.hidden) return;
+
+            modal.hidden = true;
+            document.body.classList.remove('cfh-modal-open');
+
+            if (previousActiveElement instanceof HTMLElement) {
+                previousActiveElement.focus();
+            }
+        }
+
+        function handleDocumentKeydown(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        }
+
         function saveState() {
             try {
                 var state = { step: currentIndex, fields: {} };
@@ -266,13 +308,29 @@
         var returnError = urlParams.get('cfh_error');
         var returnFormType = urlParams.get('cfh_form_type');
 
-        if (returnError && (!returnFormType || returnFormType === formType) && errorMessages[returnError]) {
-            showError(errorMessages[returnError]);
-            var cleanUrl = window.location.pathname + window.location.hash;
-            window.history.replaceState(null, '', cleanUrl);
+        if (returnError && (!returnFormType || returnFormType === formType)) {
+            if (inlineErrorMessages[returnError]) {
+                showError(inlineErrorMessages[returnError]);
+            } else if (popupErrorMessages[returnError]) {
+                openModal(popupErrorMessages[returnError]);
+            } else if (popupErrorMessages.unknown) {
+                openModal(popupErrorMessages.unknown);
+            }
+
+            removeHandledQueryParams();
         }
 
         updateUI();
+
+        function removeHandledQueryParams() {
+            var cleanedParams = new URLSearchParams(window.location.search);
+            cleanedParams.delete('cfh_error');
+            cleanedParams.delete('cfh_form_type');
+
+            var nextQuery = cleanedParams.toString();
+            var cleanUrl = window.location.pathname + (nextQuery ? '?' + nextQuery : '') + window.location.hash;
+            window.history.replaceState(null, '', cleanUrl);
+        }
     }
 
     function buildSessionKey(formType, instanceIndex) {

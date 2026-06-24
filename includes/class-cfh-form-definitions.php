@@ -69,6 +69,48 @@ final class CFH_Form_Definitions {
         );
     }
 
+    /**
+     * @return string[]
+     */
+    public static function get_inline_error_codes(): array {
+        return array(
+            'invalid_material',
+            'invalid_property',
+            'invalid_count',
+            'invalid_location',
+            'invalid_name',
+            'invalid_email',
+            'invalid_phone',
+            'gdpr_missing',
+            'invalid_inquiry_type',
+            'invalid_building_type',
+            'invalid_ownership_status',
+            'invalid_project_type',
+        );
+    }
+
+    /**
+     * @return array<string,string>
+     */
+    public static function get_popup_error_messages(): array {
+        return array(
+            'mail_failed'       => 'Ihre Anfrage konnte gerade nicht gesendet werden. Bitte versuchen Sie es in wenigen Minuten erneut.',
+            'rate_limit'        => 'Sie haben gerade mehrere Anfragen gesendet. Bitte warten Sie kurz und versuchen Sie es dann erneut.',
+            'security'          => 'Die Anfrage konnte nicht verarbeitet werden. Bitte laden Sie die Seite neu und versuchen Sie es erneut.',
+            'method'            => 'Die Anfrage konnte nicht verarbeitet werden. Bitte versuchen Sie es erneut.',
+            'invalid_form_type' => 'Die Anfrage konnte nicht verarbeitet werden. Bitte laden Sie die Seite neu und versuchen Sie es erneut.',
+            'unknown'           => 'Es ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es später erneut.',
+        );
+    }
+
+    public static function is_inline_error_code( string $code ): bool {
+        return in_array( $code, self::get_inline_error_codes(), true );
+    }
+
+    public static function is_popup_error_code( string $code ): bool {
+        return array_key_exists( $code, self::get_popup_error_messages() );
+    }
+
     public static function get_default_subject( string $form_type ): string {
         if ( $form_type === self::TYPE_ENERGY_FUNDING ) {
             return 'Neue Energieberatungs-/Förderanfrage';

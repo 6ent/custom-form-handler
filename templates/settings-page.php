@@ -63,28 +63,34 @@ $settings = ( new CFH_Settings() )->get();
     </p>
 
     <hr>
-    <h2>Fehlerseite &mdash; verfügbare Query-Parameter</h2>
-    <p>Die Fehlerseite erhält einen <code>cfh_error</code>-Parameter, z.&nbsp;B.:<br>
-       <code><?php echo esc_html( home_url( ($settings['error_url'] ?: '/error/') . '?cfh_error=rate_limit' ) ); ?></code>
+    <h2>Fehleranzeige &mdash; verfügbare Query-Parameter</h2>
+    <p>
+        Formularfehler werden jetzt bevorzugt direkt auf der Formularseite angezeigt.
+        Validierungsfehler erscheinen inline im Formular, technische Absendeprobleme als Pop-up.
+        Die konfigurierte Fehlerseite dient nur noch als Fallback, falls keine gültige Formular-URL
+        übergeben werden kann.
+    </p>
+    <p>Beispiel für einen Rücksprung zur Formularseite mit Fehlercode:<br>
+       <code><?php echo esc_html( home_url( '/beispiel-formular/?cfh_error=rate_limit&cfh_form_type=window' ) ); ?></code>
     </p>
     <table class="widefat" style="max-width:600px;">
         <thead><tr><th>Wert</th><th>Bedeutung</th></tr></thead>
         <tbody>
-            <tr><td><code>security</code></td><td>Nonce-Überprüfung fehlgeschlagen</td></tr>
-            <tr><td><code>rate_limit</code></td><td>Zu viele Einreichungen von dieser IP (max. 5/Stunde)</td></tr>
-            <tr><td><code>mail_failed</code></td><td>E-Mail konnte nicht gesendet werden</td></tr>
-            <tr><td><code>invalid_material</code></td><td>Ungültiges Fenstermaterial</td></tr>
-            <tr><td><code>invalid_property</code></td><td>Ungültiger Immobilientyp</td></tr>
-            <tr><td><code>invalid_count</code></td><td>Ungültige Fensteranzahl</td></tr>
-            <tr><td><code>invalid_location</code></td><td>Ungültige PLZ</td></tr>
-            <tr><td><code>invalid_name</code></td><td>Name fehlt</td></tr>
-            <tr><td><code>invalid_email</code></td><td>Ungültige E-Mail-Adresse</td></tr>
-            <tr><td><code>invalid_phone</code></td><td>Ungültige Telefonnummer</td></tr>
-            <tr><td><code>gdpr_missing</code></td><td>DSGVO-Zustimmung fehlt</td></tr>
-            <tr><td><code>invalid_inquiry_type</code></td><td>Ungültige Anfrageart</td></tr>
-            <tr><td><code>invalid_building_type</code></td><td>Ungültiger Gebäudetyp</td></tr>
-            <tr><td><code>invalid_ownership_status</code></td><td>Ungültiger Eigentumsstatus</td></tr>
-            <tr><td><code>invalid_project_type</code></td><td>Ungültige Maßnahme</td></tr>
+            <tr><td><code>security</code></td><td>Technischer Fehler, erscheint als Pop-up</td></tr>
+            <tr><td><code>rate_limit</code></td><td>Zu viele Einreichungen von dieser IP, erscheint als Pop-up</td></tr>
+            <tr><td><code>mail_failed</code></td><td>E-Mail konnte nicht gesendet werden, erscheint als Pop-up</td></tr>
+            <tr><td><code>invalid_material</code></td><td>Ungültiges Fenstermaterial, erscheint inline</td></tr>
+            <tr><td><code>invalid_property</code></td><td>Ungültiger Immobilientyp, erscheint inline</td></tr>
+            <tr><td><code>invalid_count</code></td><td>Ungültige Fensteranzahl, erscheint inline</td></tr>
+            <tr><td><code>invalid_location</code></td><td>Ungültige PLZ, erscheint inline</td></tr>
+            <tr><td><code>invalid_name</code></td><td>Name fehlt, erscheint inline</td></tr>
+            <tr><td><code>invalid_email</code></td><td>Ungültige E-Mail-Adresse, erscheint inline</td></tr>
+            <tr><td><code>invalid_phone</code></td><td>Ungültige Telefonnummer, erscheint inline</td></tr>
+            <tr><td><code>gdpr_missing</code></td><td>DSGVO-Zustimmung fehlt, erscheint inline</td></tr>
+            <tr><td><code>invalid_inquiry_type</code></td><td>Ungültige Anfrageart, erscheint inline</td></tr>
+            <tr><td><code>invalid_building_type</code></td><td>Ungültiger Gebäudetyp, erscheint inline</td></tr>
+            <tr><td><code>invalid_ownership_status</code></td><td>Ungültiger Eigentumsstatus, erscheint inline</td></tr>
+            <tr><td><code>invalid_project_type</code></td><td>Ungültige Maßnahme, erscheint inline</td></tr>
         </tbody>
     </table>
 </div>

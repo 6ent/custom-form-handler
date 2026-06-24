@@ -231,37 +231,20 @@ class CFH_Form_Handler {
     }
 
     private function redirect_error( array $settings, string $code = 'unknown', string $form_type = '' ): never {
-        $form_errors = array(
-            'invalid_material',
-            'invalid_property',
-            'invalid_count',
-            'invalid_location',
-            'invalid_name',
-            'invalid_email',
-            'invalid_phone',
-            'gdpr_missing',
-            'invalid_inquiry_type',
-            'invalid_building_type',
-            'invalid_ownership_status',
-            'invalid_project_type',
-        );
+        $form_url = isset( $_POST['cfh_form_url'] )
+            ? esc_url_raw( wp_unslash( $_POST['cfh_form_url'] ) )
+            : '';
 
-        if ( in_array( $code, $form_errors, true ) ) {
-            $form_url = isset( $_POST['cfh_form_url'] )
-                ? esc_url_raw( wp_unslash( $_POST['cfh_form_url'] ) )
-                : '';
-
-            if ( $form_url !== '' && str_starts_with( $form_url, home_url() ) ) {
-                $url = add_query_arg(
-                    array(
-                        'cfh_error'     => rawurlencode( $code ),
-                        'cfh_form_type' => rawurlencode( $form_type ?: $this->get_form_type() ),
-                    ),
-                    $form_url
-                );
-                wp_safe_redirect( $url );
-                exit;
-            }
+        if ( $form_url !== '' && str_starts_with( $form_url, home_url() ) ) {
+            $url = add_query_arg(
+                array(
+                    'cfh_error'     => rawurlencode( $code ),
+                    'cfh_form_type' => rawurlencode( $form_type ?: $this->get_form_type() ),
+                ),
+                $form_url
+            );
+            wp_safe_redirect( $url );
+            exit;
         }
 
         $path     = $settings['error_url'] ?: '/error/';

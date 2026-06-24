@@ -21,11 +21,12 @@ class CFH_Shortcode {
     }
 
     public function render( string $form_type = CFH_Form_Definitions::TYPE_WINDOW ): string {
-        $form       = CFH_Form_Definitions::get_form( $form_type );
-        $steps      = $form['steps'];
-        $total      = count( $steps );
-        $instance   = wp_unique_id( 'cfh-form-' );
-        $error_json = wp_json_encode( CFH_Form_Definitions::get_error_messages( $form_type ) );
+        $form              = CFH_Form_Definitions::get_form( $form_type );
+        $steps             = $form['steps'];
+        $total             = count( $steps );
+        $instance          = wp_unique_id( 'cfh-form-' );
+        $inline_error_json = wp_json_encode( CFH_Form_Definitions::get_error_messages( $form_type ) );
+        $popup_error_json  = wp_json_encode( CFH_Form_Definitions::get_popup_error_messages() );
 
         ob_start();
         ?>
@@ -34,7 +35,8 @@ class CFH_Shortcode {
             data-cfh-form="1"
             data-form-type="<?php echo esc_attr( $form_type ); ?>"
             data-instance="<?php echo esc_attr( $instance ); ?>"
-            data-error-messages="<?php echo esc_attr( $error_json ?: '{}' ); ?>"
+            data-inline-error-messages="<?php echo esc_attr( $inline_error_json ?: '{}' ); ?>"
+            data-popup-error-messages="<?php echo esc_attr( $popup_error_json ?: '{}' ); ?>"
         >
             <p class="cfh-intro"><?php echo esc_html( $form['intro'] ); ?></p>
 
@@ -69,6 +71,22 @@ class CFH_Shortcode {
                 </div>
                 <p class="cfh-step-counter">Schritt 1 von <?php echo esc_html( (string) $total ); ?></p>
             </form>
+
+            <div class="cfh-modal" hidden>
+                <div class="cfh-modal__overlay" data-cfh-modal-close></div>
+                <div
+                    class="cfh-modal__dialog"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="<?php echo esc_attr( $instance ); ?>-modal-title"
+                    aria-describedby="<?php echo esc_attr( $instance ); ?>-modal-message"
+                >
+                    <button type="button" class="cfh-modal__close" data-cfh-modal-close aria-label="Pop-up schließen">&times;</button>
+                    <h3 class="cfh-modal__title" id="<?php echo esc_attr( $instance ); ?>-modal-title">Fehler beim Senden</h3>
+                    <p class="cfh-modal__message" id="<?php echo esc_attr( $instance ); ?>-modal-message"></p>
+                    <button type="button" class="cfh-btn cfh-btn--submit cfh-modal__button" data-cfh-modal-close>Schließen</button>
+                </div>
+            </div>
         </div>
         <?php
         return (string) ob_get_clean();
