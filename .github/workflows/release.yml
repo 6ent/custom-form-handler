@@ -1,0 +1,38 @@
+name: Build Plugin Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare build directory
+        run: |
+          mkdir -p build/custom-form-handler
+          rsync -av ./ build/custom-form-handler/ \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude '.DS_Store' \
+            --exclude '.gitignore' \
+            --exclude 'build' \
+            --exclude 'RELEASING.md' \
+            --exclude 'custom-form-handler.zip'
+
+      - name: Create plugin zip
+        run: |
+          cd build
+          zip -r ../custom-form-handler.zip custom-form-handler
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: custom-form-handler.zip
+          generate_release_notes: true
