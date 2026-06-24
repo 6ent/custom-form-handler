@@ -1,0 +1,98 @@
+name: Auto Version and Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  auto-release:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: auto-version-release-main
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump plugin version
+        id: bump
+        run: |
+          NEW_VERSION=$(php -r '
+          $file = "custom-form-handler.php";
+          $contents = file_get_contents($file);
+          if (!preg_match("/Version:\\s+(\\d+)\\.(\\d+)\\.(\\d+)/", $contents, $matches)) {
+              fwrite(STDERR, "Could not find plugin version.\n");
+              exit(1);
+          }
+          $newVersion = $matches[1] . "." . $matches[2] . "." . ((int) $matches[3] + 1);
+          $contents = preg_replace_callback(
+              "/(\\* Version:\\s+)\\d+\\.\\d+\\.\\d+/",
+              static function ($versionMatches) use ($newVersion) {
+                  return $versionMatches[1] . $newVersion;
+              },
+              $contents,
+              1
+          );
+          $contents = preg_replace_callback(
+              "/(define\\( '\\''CFH_VERSION'\\'',\\s+'\\'')\\d+\\.\\d+\\.\\d+('\\''\\s*\\);)/",
+              static function ($constantMatches) use ($newVersion) {
+                  return $constantMatches[1] . $newVersion . $constantMatches[2];
+              },
+              $contents,
+              1
+          );
+          file_put_contents($file, $contents);
+          echo $newVersion;
+          ')
+          echo "version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Commit version bump
+        run: |
+          git add custom-form-handler.php
+          git commit -m "chore: auto bump plugin version to v${{ steps.bump.outputs.version }}"
+
+      - name: Create tag
+        run: git tag v${{ steps.bump.outputs.version }}
+
+      - name: Push commit and tag
+        run: |
+          git push origin HEAD:main
+          git push origin v${{ steps.bump.outputs.version }}
+
+      - name: Prepare build directory
+        run: |
+          mkdir -p build/custom-form-handler
+          rsync -av ./ build/custom-form-handler/ \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude '.DS_Store' \
+            --exclude '.gitignore' \
+            --exclude 'build' \
+            --exclude 'RELEASING.md' \
+            --exclude 'custom-form-handler.zip'
+
+      - name: Create plugin zip
+        run: |
+          cd build
+          zip -r ../custom-form-handler.zip custom-form-handler
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.bump.outputs.version }}
+          files: custom-form-handler.zip
+          generate_release_notes: true

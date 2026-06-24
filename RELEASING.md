@@ -17,20 +17,20 @@ git push -u origin main
 
 ## 3. Neue Version veröffentlichen
 
-- Erhöhen Sie die Version in `custom-form-handler.php`.
-- Committen und pushen Sie Ihre Änderungen.
-- Erstellen Sie einen Git-Tag im Format `vX.Y.Z`.
+- Committen und pushen Sie Ihre Änderungen nach `main`.
+- Die Patch-Version in `custom-form-handler.php` wird dann automatisch erhöht.
+- GitHub erstellt automatisch Commit, Tag, ZIP und Release.
 
 ```bash
 git add .
-git commit -m "Release vX.Y.Z"
+git commit -m "Ihre Änderung"
 git push origin main
-git tag vX.Y.Z
-git push origin vX.Y.Z
 ```
 
 ## 4. Automatisches Ergebnis
 
+- GitHub Actions erhöht automatisch die Patch-Version, z. B. von `2.4.2` auf `2.4.3`.
+- GitHub Actions erstellt automatisch einen Tag im Format `vX.Y.Z`.
 - GitHub Actions baut automatisch `custom-form-handler.zip`.
 - Das ZIP wird an den GitHub Release angehängt.
 - WordPress erkennt die neue Version im Plugin-Admin und kann sie direkt installieren.
