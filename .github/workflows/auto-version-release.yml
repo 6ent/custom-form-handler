@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -31,33 +31,40 @@ jobs:
       - name: Bump plugin version
         id: bump
         run: |
-          NEW_VERSION=$(php -r '
-          $file = "custom-form-handler.php";
+          NEW_VERSION=$(php <<'PHP'
+          <?php
+          $file = 'custom-form-handler.php';
           $contents = file_get_contents($file);
-          if (!preg_match("/Version:\\s+(\\d+)\\.(\\d+)\\.(\\d+)/", $contents, $matches)) {
+
+          if (!preg_match('/Version:\s+(\d+)\.(\d+)\.(\d+)/', $contents, $matches)) {
               fwrite(STDERR, "Could not find plugin version.\n");
               exit(1);
           }
-          $newVersion = $matches[1] . "." . $matches[2] . "." . ((int) $matches[3] + 1);
+
+          $newVersion = $matches[1] . '.' . $matches[2] . '.' . ((int) $matches[3] + 1);
+
           $contents = preg_replace_callback(
-              "/(\\* Version:\\s+)\\d+\\.\\d+\\.\\d+/",
+              '/(\* Version:\s+)\d+\.\d+\.\d+/',
               static function ($versionMatches) use ($newVersion) {
                   return $versionMatches[1] . $newVersion;
               },
               $contents,
               1
           );
+
           $contents = preg_replace_callback(
-              "/(define\\( '\\''CFH_VERSION'\\'',\\s+'\\'')\\d+\\.\\d+\\.\\d+('\\''\\s*\\);)/",
+              "/(define\( 'CFH_VERSION',\s+')\d+\.\d+\.\d+('\s*\);)/",
               static function ($constantMatches) use ($newVersion) {
                   return $constantMatches[1] . $newVersion . $constantMatches[2];
               },
               $contents,
               1
           );
+
           file_put_contents($file, $contents);
           echo $newVersion;
-          ')
+          PHP
+          )
           echo "version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Commit version bump
