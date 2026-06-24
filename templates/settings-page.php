@@ -20,7 +20,7 @@ $settings = ( new CFH_Settings() )->get();
     <p style="margin-top:10px;color:#666;font-size:13px;max-width:720px;">
         Für automatische Plugin-Updates über GitHub tragen Sie beim Feld <strong>GitHub Repository</strong>
         Ihr öffentliches Repository im Format <code>owner/repo</code> ein, z. B.
-        <code>gentrit/custom-form-handler</code>. Das Release-ZIP muss im GitHub-Release
+        <code>6ent/custom-form-handler</code>. Das Release-ZIP muss im GitHub-Release
         <code>custom-form-handler.zip</code> heißen.
     </p>
 

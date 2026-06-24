@@ -1,6 +1,6 @@
 <?php
 /**
- * GitHub-Release-Updater fuer Custom Form Handler.
+ * GitHub-Release-Updater für Custom Form Handler.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -118,7 +118,7 @@ class CFH_Github_Updater {
         }
 
         echo '<div class="notice notice-warning"><p>';
-        echo esc_html__( 'Custom Form Handler: Bitte hinterlegen Sie unter den Plugin-Einstellungen Ihr öffentliches GitHub-Repository im Format owner/repo, damit WordPress Updates erkennen kann.', 'custom-form-handler' );
+        echo esc_html__( 'Custom Form Handler: Bitte prüfen Sie das GitHub-Repository in den Plugin-Einstellungen, falls Updates nicht erkannt werden.', 'custom-form-handler' );
         echo '</p></div>';
     }
 
@@ -126,11 +126,11 @@ class CFH_Github_Updater {
         $settings = ( new CFH_Settings() )->get();
         $repo     = sanitize_text_field( $settings['github_repository'] ?? '' );
 
-        if ( ! preg_match( '/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/', $repo ) ) {
-            return '';
+        if ( preg_match( '/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/', $repo ) ) {
+            return $repo;
         }
 
-        return $repo;
+        return CFH_GITHUB_REPOSITORY;
     }
 
     /**

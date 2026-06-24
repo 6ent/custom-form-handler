@@ -21,7 +21,7 @@ class CFH_Settings {
         'n8n_webhook_url'  => '',
         'n8n_webhook_secret' => '',
         'from_name'        => 'Fenster-Lead',
-        'github_repository' => '',
+        'github_repository' => CFH_GITHUB_REPOSITORY,
     );
 
     public function register(): void {

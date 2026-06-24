@@ -2,9 +2,8 @@
 
 ## 1. Repository vorbereiten
 
-- Erstellen Sie auf GitHub ein neues öffentliches Repository.
-- Kopieren Sie die Repository-Adresse.
-- Tragen Sie in WordPress unter `Einstellungen > Form Handler` das Repository im Format `owner/repo` ein.
+- Das öffentliche Repository ist `6ent/custom-form-handler`.
+- Prüfen Sie in WordPress unter `Einstellungen > Form Handler`, dass beim Feld `GitHub Repository` derselbe Wert gesetzt ist.
 
 ## 2. Erstes Push-Setup
 
