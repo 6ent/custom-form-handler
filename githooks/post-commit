@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -u
+
+if [[ "${CFH_SKIP_XAMPP_DEPLOY:-0}" = "1" ]]; then
+    exit 0
+fi
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+DEPLOY_SCRIPT="${REPO_ROOT}/scripts/deploy-to-xampp.sh"
+
+if [[ ! -x "${DEPLOY_SCRIPT}" ]]; then
+    echo "[cfh] Skipping XAMPP deploy: ${DEPLOY_SCRIPT} is not executable."
+    exit 0
+fi
+
+echo "[cfh] Deploying plugin to local XAMPP after commit..."
+
+if "${DEPLOY_SCRIPT}"; then
+    echo "[cfh] XAMPP deploy finished."
+else
+    echo "[cfh] XAMPP deploy failed. Commit was created, but files were not synced." >&2
+fi

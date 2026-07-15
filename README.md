@@ -50,7 +50,7 @@ Sobald ein neuer GitHub-Release mit höherer Version existiert, sollte WordPress
 
 ## Entwicklung
 
-Lokale Syntax-Prüfung:
+Lokale Syntax-Pruefung:
 
 ```bash
 find . -name '*.php' -exec php -l {} \;
@@ -62,6 +62,20 @@ Lokales Deployment nach XAMPP:
 ./scripts/deploy-to-xampp.sh --dry-run
 ./scripts/deploy-to-xampp.sh
 ```
+
+Automatisches Deployment nach jedem lokalen Commit aktivieren:
+
+```bash
+./scripts/install-git-hooks.sh
+```
+
+Danach fuehrt Git bei jedem `git commit` automatisch `scripts/deploy-to-xampp.sh` aus und synchronisiert das Plugin nach:
+
+```text
+/Applications/XAMPP/xamppfiles/htdocs/wordpress/wp-content/plugins/custom-form-handler
+```
+
+Optional kann das Ziel ueber `CFH_XAMPP_PLUGIN_DIR` oder `--target-dir` ueberschrieben werden.
 
 Änderungen pushen:
 
