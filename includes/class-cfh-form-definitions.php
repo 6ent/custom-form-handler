@@ -399,7 +399,7 @@ final class CFH_Form_Definitions {
                                     'heizung'            => 'Heizung / Wärmepumpe',
                                     'daemmung'           => 'Dämmung',
                                     'fenster'            => 'Fenster / Türen',
-                                    'erneuerbare'        => 'Photovoltaik / Erneuerbare',
+                                    'erneuerbare'        => 'Photovoltaik',
                                     'beratung_allgemein' => 'Allgemeine Beratung',
                                 ),
                                 'icons'       => array(
