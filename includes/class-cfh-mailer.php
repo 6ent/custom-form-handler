@@ -66,12 +66,48 @@ class CFH_Mailer {
         $name           = esc_html( $data['name'] );
         $email          = esc_html( $data['email'] );
         $phone          = esc_html( $data['phone'] ?: '-' );
+        $contact_preference = esc_html( CFH_Form_Definitions::get_display_value( $form_type, 'contactPreference', $data['contactPreference'] ?? '' ) );
+        $preferred_contact_time = esc_html( $data['preferredContactTime'] ?? '' );
+        $tracking_rows  = $this->build_tracking_rows( $data );
         $submitted      = esc_html( wp_date( 'd.m.Y H:i', time() ) );
         $reply_subject  = rawurlencode( CFH_Form_Definitions::get_reply_subject( $form_type ) );
 
         ob_start();
         require CFH_PLUGIN_DIR . 'templates/email.php';
         return (string) ob_get_clean();
+    }
+
+    /**
+     * @param array<string,string> $data
+     * @return array<int,array{label:string,value:string}>
+     */
+    private function build_tracking_rows( array $data ): array {
+        $labels = array(
+            'landingPage'  => 'Landingpage',
+            'referrer'     => 'Referrer',
+            'utm_source'   => 'UTM Source',
+            'utm_medium'   => 'UTM Medium',
+            'utm_campaign' => 'UTM Campaign',
+            'utm_term'     => 'UTM Term',
+            'utm_content'  => 'UTM Content',
+            'gclid'        => 'Google Click ID',
+            'fbclid'       => 'Facebook Click ID',
+        );
+        $rows = array();
+
+        foreach ( $labels as $key => $label ) {
+            $value = trim( $data[ $key ] ?? '' );
+            if ( $value === '' ) {
+                continue;
+            }
+
+            $rows[] = array(
+                'label' => esc_html( $label ),
+                'value' => esc_html( $value ),
+            );
+        }
+
+        return $rows;
     }
 
     /**

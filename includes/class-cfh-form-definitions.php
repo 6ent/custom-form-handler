@@ -45,6 +45,7 @@ final class CFH_Form_Definitions {
             'invalid_email'    => 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',
             'invalid_phone'    => 'Die angegebene Telefonnummer ist ungültig.',
             'gdpr_missing'     => 'Bitte stimmen Sie der Datenschutzerklärung zu.',
+            'invalid_contact_preference' => 'Bitte wählen Sie eine gültige Kontaktart aus.',
         );
 
         if ( $form_type === self::TYPE_ENERGY_FUNDING ) {
@@ -82,6 +83,7 @@ final class CFH_Form_Definitions {
             'invalid_email',
             'invalid_phone',
             'gdpr_missing',
+            'invalid_contact_preference',
             'invalid_inquiry_type',
             'invalid_building_type',
             'invalid_ownership_status',
@@ -231,7 +233,7 @@ final class CFH_Form_Definitions {
     private static function get_forms(): array {
         return array(
             self::TYPE_WINDOW => array(
-                'intro' => 'Bitte füllen Sie alle Felder sorgfältig aus. Pflichtfelder sind mit einem * markiert.',
+                'intro' => 'Beantworten Sie kurz ein paar Fragen. Wir melden uns mit einer kostenlosen Ersteinschätzung zu Ihrem Vorhaben.',
                 'steps' => array(
                     array(
                         'title'  => 'Schritt 1 von 5: Welche Art von Fenster möchten Sie?',
@@ -309,7 +311,7 @@ final class CFH_Form_Definitions {
                 ),
             ),
             self::TYPE_ENERGY_FUNDING => array(
-                'intro' => 'Bitte füllen Sie alle Felder sorgfältig aus. So können wir Ihre Anfrage zu Energieberatung und Förderung schnell einordnen.',
+                'intro' => 'Beantworten Sie kurz ein paar Fragen. Wir prüfen, welche Beratung oder Förderung zu Ihrem Vorhaben passt.',
                 'steps' => array(
                     array(
                         'title'  => 'Schritt 1 von 5: Wofür interessieren Sie sich?',
@@ -325,6 +327,12 @@ final class CFH_Form_Definitions {
                                     'bafa'            => 'Förderanfrage BAFA',
                                     'kfw'             => 'Förderanfrage KfW',
                                     'kombiniert'      => 'Beratung plus Förderung',
+                                ),
+                                'icons'       => array(
+                                    'energieberatung' => 'clipboard-check',
+                                    'bafa'            => 'badge-euro',
+                                    'kfw'             => 'landmark',
+                                    'kombiniert'      => 'sparkles',
                                 ),
                             ),
                         ),
@@ -344,6 +352,12 @@ final class CFH_Form_Definitions {
                                     'wohnung'         => 'Wohnung',
                                     'gewerbe'         => 'Gewerbe',
                                 ),
+                                'icons'       => array(
+                                    'einfamilienhaus' => 'home',
+                                    'mehrfamilienhaus' => 'building',
+                                    'wohnung'         => 'door-open',
+                                    'gewerbe'         => 'briefcase',
+                                ),
                             ),
                         ),
                     ),
@@ -361,6 +375,12 @@ final class CFH_Form_Definitions {
                                     'kaeufer'           => 'Käufer/in',
                                     'verwaltung'        => 'Verwaltung / Unternehmen',
                                     'mieter_sonstiges'  => 'Mieter/in oder Sonstiges',
+                                ),
+                                'icons'       => array(
+                                    'eigentuemer'      => 'key',
+                                    'kaeufer'          => 'handshake',
+                                    'verwaltung'       => 'briefcase',
+                                    'mieter_sonstiges' => 'user-round',
                                 ),
                             ),
                         ),
@@ -382,12 +402,20 @@ final class CFH_Form_Definitions {
                                     'erneuerbare'        => 'Photovoltaik / Erneuerbare',
                                     'beratung_allgemein' => 'Allgemeine Beratung',
                                 ),
+                                'icons'       => array(
+                                    'sanierung'          => 'hammer',
+                                    'heizung'            => 'flame',
+                                    'daemmung'           => 'layers',
+                                    'fenster'            => 'panel-top',
+                                    'erneuerbare'        => 'sun',
+                                    'beratung_allgemein' => 'message-circle',
+                                ),
                             ),
                         ),
                     ),
                     array(
                         'title'  => 'Schritt 5 von 5: Ihre Kontaktdaten',
-                        'fields' => self::get_contact_fields( true ),
+                        'fields' => self::get_contact_fields( true, true ),
                     ),
                 ),
             ),
@@ -397,7 +425,7 @@ final class CFH_Form_Definitions {
     /**
      * @return array<int,array<string,mixed>>
      */
-    private static function get_contact_fields( bool $include_location ): array {
+    private static function get_contact_fields( bool $include_location, bool $include_icons = false ): array {
         $fields = array();
 
         if ( $include_location ) {
@@ -411,6 +439,7 @@ final class CFH_Form_Definitions {
                 'inputmode'    => 'numeric',
                 'maxlength'    => '5',
                 'autocomplete' => 'postal-code',
+                'icon'         => $include_icons ? 'map-pin' : '',
             );
         }
 
@@ -424,6 +453,7 @@ final class CFH_Form_Definitions {
                 'required'     => true,
                 'placeholder'  => 'Max Mustermann',
                 'autocomplete' => 'name',
+                'icon'         => $include_icons ? 'user-round' : '',
             ),
             array(
                 'type'         => 'email',
@@ -432,6 +462,7 @@ final class CFH_Form_Definitions {
                 'required'     => true,
                 'placeholder'  => 'beispiel@domain.de',
                 'autocomplete' => 'email',
+                'icon'         => $include_icons ? 'mail' : '',
             ),
             array(
                 'type'         => 'tel',
@@ -441,6 +472,34 @@ final class CFH_Form_Definitions {
                 'placeholder'  => '+49 123 4567890',
                 'pattern'      => '\+?[\d\s\-]{6,20}',
                 'autocomplete' => 'tel',
+                'icon'         => $include_icons ? 'phone' : '',
+            ),
+            array(
+                'type'        => 'radio_group',
+                'name'        => 'contactPreference',
+                'group_label' => 'Wie möchten Sie kontaktiert werden?',
+                'required'    => false,
+                'help'        => 'Optional - wählen Sie, was für Sie am bequemsten ist.',
+                'options'     => array(
+                    'phone' => 'Telefon',
+                    'email' => 'E-Mail',
+                    'any'   => 'Egal',
+                ),
+                'icons'       => $include_icons ? array(
+                    'phone' => 'phone',
+                    'email' => 'mail',
+                    'any'   => 'message-circle',
+                ) : array(),
+            ),
+            array(
+                'type'         => 'text',
+                'name'         => 'preferredContactTime',
+                'label'        => 'Wann passen wir Sie am besten?',
+                'label_suffix' => '<span class="cfh-optional">(optional)</span>',
+                'placeholder'  => 'z. B. vormittags oder ab 17 Uhr',
+                'maxlength'    => '80',
+                'autocomplete' => 'off',
+                'icon'         => $include_icons ? 'clock' : '',
             ),
             array(
                 'type'     => 'checkbox',
@@ -450,6 +509,7 @@ final class CFH_Form_Definitions {
                     esc_url( get_privacy_policy_url() )
                 ),
                 'required' => true,
+                'icon'     => $include_icons ? 'shield-check' : '',
             ),
             )
         );

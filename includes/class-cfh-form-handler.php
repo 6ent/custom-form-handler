@@ -184,11 +184,14 @@ class CFH_Form_Handler {
      * @return array<string,string>|WP_Error
      */
     private function sanitize_common_fields(): array|WP_Error {
-        $location = sanitize_text_field( wp_unslash( $_POST['location'] ?? '' ) );
-        $name     = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) );
-        $email    = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
-        $phone    = sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) );
-        $gdpr     = isset( $_POST['gdpr_consent'] ) ? '1' : '0';
+        $location               = sanitize_text_field( wp_unslash( $_POST['location'] ?? '' ) );
+        $name                   = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) );
+        $email                  = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
+        $phone                  = sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) );
+        $contact_preference     = sanitize_key( wp_unslash( $_POST['contactPreference'] ?? '' ) );
+        $preferred_contact_time = substr( sanitize_text_field( wp_unslash( $_POST['preferredContactTime'] ?? '' ) ), 0, 80 );
+        $gdpr                   = isset( $_POST['gdpr_consent'] ) ? '1' : '0';
+        $allowed_contact_preferences = array( '', 'phone', 'email', 'any' );
 
         if ( ! preg_match( '/^\d{5}$/', $location ) ) {
             return new WP_Error( 'invalid_location', 'Ungültige PLZ.' );
@@ -206,18 +209,46 @@ class CFH_Form_Handler {
             return new WP_Error( 'invalid_phone', 'Ungültige Telefonnummer.' );
         }
 
+        if ( ! in_array( $contact_preference, $allowed_contact_preferences, true ) ) {
+            return new WP_Error( 'invalid_contact_preference', 'Ungültige Kontaktpräferenz.' );
+        }
+
         if ( $gdpr !== '1' ) {
             return new WP_Error( 'gdpr_missing', 'Datenschutzzustimmung fehlt.' );
         }
 
-        return array(
-            'formType' => $this->get_form_type(),
-            'location' => $location,
-            'name'     => $name,
-            'email'    => $email,
-            'phone'    => $phone,
-            'gdpr'     => $gdpr,
+        return array_merge(
+            array(
+                'formType'             => $this->get_form_type(),
+                'location'             => $location,
+                'name'                 => $name,
+                'email'                => $email,
+                'phone'                => $phone,
+                'contactPreference'    => $contact_preference,
+                'preferredContactTime' => $preferred_contact_time,
+                'gdpr'                 => $gdpr,
+            ),
+            $this->sanitize_tracking_fields()
         );
+    }
+
+    /**
+     * @return array<string,string>
+     */
+    private function sanitize_tracking_fields(): array {
+        $url_fields  = array( 'landingPage', 'referrer' );
+        $text_fields = array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'fbclid' );
+        $tracking    = array();
+
+        foreach ( $url_fields as $field ) {
+            $tracking[ $field ] = esc_url_raw( wp_unslash( $_POST[ $field ] ?? '' ) );
+        }
+
+        foreach ( $text_fields as $field ) {
+            $tracking[ $field ] = substr( sanitize_text_field( wp_unslash( $_POST[ $field ] ?? '' ) ), 0, 255 );
+        }
+
+        return $tracking;
     }
 
     private function get_form_type(): string {

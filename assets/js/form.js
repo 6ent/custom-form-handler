@@ -34,13 +34,31 @@
         var sessionKey = buildSessionKey(formType, instanceIndex);
         var inlineErrorMessages = parseErrorMessages(wrap.dataset.inlineErrorMessages);
         var popupErrorMessages = parseErrorMessages(wrap.dataset.popupErrorMessages);
+        var errorCodeByField = {
+            windowMaterial: 'invalid_material',
+            propertyType: 'invalid_property',
+            windowCount: 'invalid_count',
+            inquiryType: 'invalid_inquiry_type',
+            buildingType: 'invalid_building_type',
+            ownershipStatus: 'invalid_ownership_status',
+            projectType: 'invalid_project_type',
+            location: 'invalid_location',
+            name: 'invalid_name',
+            email: 'invalid_email',
+            phone: 'invalid_phone',
+            gdpr_consent: 'gdpr_missing',
+            contactPreference: 'invalid_contact_preference'
+        };
 
         if (!form || steps.length === 0) return;
 
         var currentIndex = 0;
         var previousActiveElement = null;
+        var autoAdvanceTimer = null;
 
+        populateTrackingFields();
         restoreState();
+        updateSummary();
 
         steps.forEach(function (step) {
             syncNextButton(step);
@@ -64,12 +82,28 @@
             if (target.matches('input[type="radio"], input[type="checkbox"]')) {
                 var step = target.closest('.cfh-step');
                 if (step) syncNextButton(step);
+                clearFieldError(target.name);
+                clearInvalidState(target);
             }
+
+            if (target.matches('input[type="radio"]')) {
+                var activeStep = target.closest('.cfh-step');
+                scheduleAutoAdvance(activeStep);
+            }
+
             saveState();
+            updateSummary();
         });
 
-        form.addEventListener('input', function () {
+        form.addEventListener('input', function (e) {
+            var target = e.target;
+            if (target instanceof HTMLElement && target.name && isFieldVisiblyValid(target)) {
+                clearFieldError(target.name);
+                clearInvalidState(target);
+            }
+
             saveState();
+            updateSummary();
         });
 
         form.addEventListener('keydown', function (e) {
@@ -109,6 +143,8 @@
         document.addEventListener('keydown', handleDocumentKeydown);
 
         function advance() {
+            clearAutoAdvance();
+
             if (!validateStep(currentIndex)) {
                 showError('Bitte wählen Sie eine Option oder füllen Sie alle Pflichtfelder korrekt aus.');
                 return;
@@ -121,35 +157,68 @@
             syncNextButton(steps[currentIndex]);
             focusFirstField(steps[currentIndex]);
             updateUI();
+            updateSummary();
             saveState();
         }
 
         function retreat() {
+            clearAutoAdvance();
             hideError();
             steps[currentIndex].classList.remove('active');
             currentIndex = Math.max(currentIndex - 1, 0);
             steps[currentIndex].classList.add('active');
             updateUI();
+            updateSummary();
             saveState();
         }
 
         function validateStep(index) {
             var step = steps[index];
-            var fields = step.querySelectorAll('input[required], select[required], textarea[required]');
+            var radioGroups = {};
+            var fields = step.querySelectorAll('input, select, textarea');
             var valid = true;
 
             fields.forEach(function (field) {
+                if (!field.name || field.type === 'hidden') return;
+
+                if (field.type === 'radio') {
+                    if (field.required) {
+                        radioGroups[field.name] = radioGroups[field.name] || [];
+                        radioGroups[field.name].push(field);
+                    }
+                    return;
+                }
+
+                var shouldValidate = field.required || field.value !== '';
+                if (!shouldValidate) {
+                    clearFieldError(field.name);
+                    clearInvalidState(field);
+                    return;
+                }
+
                 if (!field.checkValidity()) {
                     valid = false;
-                    field.classList.add('cfh-invalid');
-                    field.addEventListener('input', function clearInvalid() {
-                        field.classList.remove('cfh-invalid');
-                    }, { once: true });
-                    field.addEventListener('change', function clearInvalid() {
-                        field.classList.remove('cfh-invalid');
-                    }, { once: true });
+                    markInvalidState(field);
+                    showFieldError(field.name, getValidationMessage(field.name, field.validationMessage));
                 } else {
-                    field.classList.remove('cfh-invalid');
+                    clearInvalidState(field);
+                    clearFieldError(field.name);
+                }
+            });
+
+            Object.keys(radioGroups).forEach(function (name) {
+                var group = radioGroups[name];
+                var anyChecked = group.some(function (radio) {
+                    return radio.checked;
+                });
+
+                if (!anyChecked) {
+                    valid = false;
+                    markInvalidState(group[0]);
+                    showFieldError(name, getValidationMessage(name, 'Bitte wählen Sie eine Option.'));
+                } else {
+                    clearInvalidState(group[0]);
+                    clearFieldError(name);
                 }
             });
 
@@ -170,6 +239,44 @@
             if (counter) {
                 counter.textContent = 'Schritt ' + humanIndex + ' von ' + total;
             }
+        }
+
+        function scheduleAutoAdvance(step) {
+            clearAutoAdvance();
+
+            if (!step || steps[currentIndex] !== step || currentIndex >= steps.length - 1) return;
+            if (!isAutoAdvanceStep(step)) return;
+
+            autoAdvanceTimer = window.setTimeout(function () {
+                if (steps[currentIndex] !== step) return;
+                if (validateStep(currentIndex)) {
+                    advance();
+                }
+            }, 260);
+        }
+
+        function clearAutoAdvance() {
+            if (!autoAdvanceTimer) return;
+            window.clearTimeout(autoAdvanceTimer);
+            autoAdvanceTimer = null;
+        }
+
+        function isAutoAdvanceStep(step) {
+            var requiredRadios = Array.from(step.querySelectorAll('input[type="radio"][required]'));
+            if (requiredRadios.length === 0) return false;
+
+            var anyChecked = requiredRadios.some(function (radio) {
+                return radio.checked;
+            });
+            if (!anyChecked) return false;
+
+            var otherRequired = Array.from(step.querySelectorAll('input[required], select[required], textarea[required]')).filter(function (field) {
+                return field.type !== 'radio';
+            });
+
+            return otherRequired.every(function (field) {
+                return field.checkValidity();
+            });
         }
 
         function focusFirstField(stepEl) {
@@ -197,6 +304,157 @@
             });
             nextBtn.disabled = !anyChecked;
             nextBtn.title = anyChecked ? '' : 'Bitte wählen Sie eine Option';
+        }
+
+        function showFieldError(name, message) {
+            if (!name) return;
+
+            var error = wrap.querySelector('[data-cfh-error-for="' + cssEscape(name) + '"]');
+            if (!error) return;
+
+            error.textContent = message;
+            error.style.display = 'block';
+        }
+
+        function clearFieldError(name) {
+            if (!name) return;
+
+            var error = wrap.querySelector('[data-cfh-error-for="' + cssEscape(name) + '"]');
+            if (!error) return;
+
+            error.textContent = '';
+            error.style.display = 'none';
+        }
+
+        function getValidationMessage(name, fallback) {
+            var code = errorCodeByField[name] || '';
+            return inlineErrorMessages[code] || fallback || 'Bitte prüfen Sie dieses Feld.';
+        }
+
+        function showReturnFieldError(errorCode) {
+            var fieldName = '';
+
+            Object.keys(errorCodeByField).some(function (name) {
+                if (errorCodeByField[name] === errorCode) {
+                    fieldName = name;
+                    return true;
+                }
+                return false;
+            });
+
+            if (fieldName) {
+                goToFieldStep(fieldName);
+                markInvalidState(form.querySelector('[name="' + cssEscape(fieldName) + '"]'));
+                showFieldError(fieldName, inlineErrorMessages[errorCode]);
+            }
+        }
+
+        function goToFieldStep(fieldName) {
+            var field = form.querySelector('[name="' + cssEscape(fieldName) + '"]');
+            var step = field ? field.closest('.cfh-step') : null;
+            var targetIndex = step ? steps.indexOf(step) : -1;
+
+            if (targetIndex < 0 || targetIndex === currentIndex) return;
+
+            steps[currentIndex].classList.remove('active');
+            currentIndex = targetIndex;
+            steps[currentIndex].classList.add('active');
+            syncNextButton(steps[currentIndex]);
+            updateUI();
+            updateSummary();
+            focusFirstField(steps[currentIndex]);
+        }
+
+        function markInvalidState(field) {
+            var target = getInvalidStateTarget(field);
+            if (target) target.classList.add('cfh-invalid');
+        }
+
+        function clearInvalidState(field) {
+            var target = getInvalidStateTarget(field);
+            if (target) target.classList.remove('cfh-invalid');
+        }
+
+        function getInvalidStateTarget(field) {
+            if (!field) return null;
+
+            if (field.type === 'radio') {
+                return field.closest('.cfh-btn-group');
+            }
+
+            if (field.type === 'checkbox') {
+                return field.closest('.cfh-checkbox-label');
+            }
+
+            return field;
+        }
+
+        function isFieldVisiblyValid(field) {
+            if (!field || !field.name || field.type === 'hidden') return true;
+            if (field.type === 'radio') {
+                return Array.from(form.querySelectorAll('input[type="radio"][name="' + cssEscape(field.name) + '"]')).some(function (radio) {
+                    return radio.checked;
+                });
+            }
+            if (!field.required && field.value === '') return true;
+            return field.checkValidity();
+        }
+
+        function updateSummary() {
+            var summaryValues = Array.from(wrap.querySelectorAll('[data-cfh-summary-value]'));
+            if (summaryValues.length === 0) return;
+
+            summaryValues.forEach(function (item) {
+                var name = item.getAttribute('data-cfh-summary-value') || '';
+                item.textContent = getDisplayValue(name) || '-';
+            });
+        }
+
+        function getDisplayValue(name) {
+            if (!name) return '';
+
+            var checked = form.querySelector('input[type="radio"][name="' + cssEscape(name) + '"]:checked');
+            if (checked) {
+                return checked.getAttribute('data-cfh-label') || checked.value;
+            }
+
+            var field = form.querySelector('[name="' + cssEscape(name) + '"]');
+            if (!field || field.type === 'hidden') return '';
+
+            if (field.type === 'checkbox') {
+                return field.checked ? 'Ja' : '';
+            }
+
+            return field.value || '';
+        }
+
+        function populateTrackingFields() {
+            var params = new URLSearchParams(window.location.search);
+            var trackingValues = {
+                landingPage: buildCleanPageUrl(),
+                referrer: document.referrer || '',
+                utm_source: params.get('utm_source') || '',
+                utm_medium: params.get('utm_medium') || '',
+                utm_campaign: params.get('utm_campaign') || '',
+                utm_term: params.get('utm_term') || '',
+                utm_content: params.get('utm_content') || '',
+                gclid: params.get('gclid') || '',
+                fbclid: params.get('fbclid') || ''
+            };
+
+            Object.keys(trackingValues).forEach(function (name) {
+                var field = form.querySelector('input[data-cfh-tracking="' + cssEscape(name) + '"]');
+                if (field) field.value = trackingValues[name];
+            });
+        }
+
+        function buildCleanPageUrl() {
+            var cleanedParams = new URLSearchParams(window.location.search);
+            cleanedParams.delete('cfh_error');
+            cleanedParams.delete('cfh_form_type');
+
+            var nextQuery = cleanedParams.toString();
+            return window.location.origin + window.location.pathname + (nextQuery ? '?' + nextQuery : '') + window.location.hash;
         }
 
         function showError(msg) {
@@ -311,6 +569,7 @@
         if (returnError && (!returnFormType || returnFormType === formType)) {
             if (inlineErrorMessages[returnError]) {
                 showError(inlineErrorMessages[returnError]);
+                showReturnFieldError(returnError);
             } else if (popupErrorMessages[returnError]) {
                 openModal(popupErrorMessages[returnError]);
             } else if (popupErrorMessages.unknown) {

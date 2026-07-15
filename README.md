@@ -56,6 +56,13 @@ Lokale Syntax-Prüfung:
 find . -name '*.php' -exec php -l {} \;
 ```
 
+Lokales Deployment nach XAMPP:
+
+```bash
+./scripts/deploy-to-xampp.sh --dry-run
+./scripts/deploy-to-xampp.sh
+```
+
 Änderungen pushen:
 
 ```bash

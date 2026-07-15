@@ -58,7 +58,35 @@
                 <td style="padding:12px 16px;color:#666;font-size:14px;vertical-align:top;">Telefon</td>
                 <td style="padding:12px 16px;color:#333;font-size:14px;"><?php echo $phone; ?></td>
               </tr>
+              <?php if ( $contact_preference !== '' ) : ?>
+                <tr style="border-top:1px solid #eee;background:#fafafa;">
+                  <td style="padding:12px 16px;color:#666;font-size:14px;vertical-align:top;">Kontaktwunsch</td>
+                  <td style="padding:12px 16px;color:#333;font-size:14px;"><?php echo $contact_preference; ?></td>
+                </tr>
+              <?php endif; ?>
+              <?php if ( $preferred_contact_time !== '' ) : ?>
+                <tr style="border-top:1px solid #eee;">
+                  <td style="padding:12px 16px;color:#666;font-size:14px;vertical-align:top;">Beste Kontaktzeit</td>
+                  <td style="padding:12px 16px;color:#333;font-size:14px;"><?php echo $preferred_contact_time; ?></td>
+                </tr>
+              <?php endif; ?>
             </table>
+
+            <?php if ( ! empty( $tracking_rows ) ) : ?>
+              <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:28px;">
+                <tr>
+                  <td colspan="2" style="background:#f8f8f8;padding:10px 16px;border-radius:6px 6px 0 0;">
+                    <strong style="color:#E86401;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Tracking</strong>
+                  </td>
+                </tr>
+                <?php foreach ( $tracking_rows as $index => $row ) : ?>
+                  <tr style="border-bottom:1px solid #eee;<?php echo 1 === $index % 2 ? 'background:#fafafa;' : ''; ?>">
+                    <td style="padding:12px 16px;color:#666;font-size:14px;width:45%;vertical-align:top;"><?php echo $row['label']; ?></td>
+                    <td style="padding:12px 16px;color:#333;font-size:14px;word-break:break-word;"><?php echo $row['value']; ?></td>
+                  </tr>
+                <?php endforeach; ?>
+              </table>
+            <?php endif; ?>
 
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
