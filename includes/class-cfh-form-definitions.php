@@ -55,7 +55,8 @@ final class CFH_Form_Definitions {
                     'invalid_inquiry_type'     => 'Bitte wählen Sie aus, wofür Sie eine Anfrage stellen.',
                     'invalid_building_type'    => 'Bitte wählen Sie den Gebäudetyp aus.',
                     'invalid_ownership_status' => 'Bitte wählen Sie Ihren Eigentumsstatus aus.',
-                    'invalid_project_type'     => 'Bitte wählen Sie die passende Maßnahme aus.',
+                    'invalid_window_project_type' => 'Bitte wählen Sie die passende Fenster- oder Türmaßnahme aus.',
+                    'invalid_energy_window_count' => 'Bitte wählen Sie die Anzahl der Fenster oder Elemente aus.',
                 )
             );
         }
@@ -87,7 +88,8 @@ final class CFH_Form_Definitions {
             'invalid_inquiry_type',
             'invalid_building_type',
             'invalid_ownership_status',
-            'invalid_project_type',
+            'invalid_window_project_type',
+            'invalid_energy_window_count',
         );
     }
 
@@ -173,8 +175,12 @@ final class CFH_Form_Definitions {
                     'value' => self::get_display_value( $form_type, 'ownershipStatus', $data['ownershipStatus'] ?? '' ),
                 ),
                 array(
-                    'label' => 'Projekt / Maßnahme',
-                    'value' => self::get_display_value( $form_type, 'projectType', $data['projectType'] ?? '' ),
+                    'label' => 'Fenster-/Tür-Maßnahme',
+                    'value' => self::get_display_value( $form_type, 'windowProjectType', $data['windowProjectType'] ?? '' ),
+                ),
+                array(
+                    'label' => 'Anzahl Fenster / Elemente',
+                    'value' => self::get_display_value( $form_type, 'windowCount', $data['windowCount'] ?? '' ),
                 ),
                 array(
                     'label' => 'Projektstandort (PLZ)',
@@ -311,28 +317,28 @@ final class CFH_Form_Definitions {
                 ),
             ),
             self::TYPE_ENERGY_FUNDING => array(
-                'intro' => 'Beantworten Sie kurz ein paar Fragen. Wir prüfen, welche Beratung oder Förderung zu Ihrem Vorhaben passt.',
+                'intro' => 'Beantworten Sie kurz ein paar Fragen. Wir prüfen, welche Beratung oder Förderung für Ihren Fenstertausch passt.',
                 'steps' => array(
                     array(
-                        'title'  => 'Schritt 1 von 5: Wofür interessieren Sie sich?',
+                        'title'  => 'Schritt 1 von 5: Wofür benötigen Sie Unterstützung?',
                         'fields' => array(
                             array(
                                 'type'        => 'radio_group',
                                 'name'        => 'inquiryType',
                                 'group_label' => 'Anfrageart wählen',
                                 'required'    => true,
-                                'help'        => 'Wählen Sie aus, ob Sie Energieberatung, BAFA, KfW oder eine kombinierte Anfrage stellen möchten.',
+                                'help'        => 'Wählen Sie aus, ob Sie einen Fördercheck, Energieberatung oder eine kombinierte Prüfung wünschen.',
                                 'options'     => array(
-                                    'energieberatung' => 'Energieberatung',
-                                    'bafa'            => 'Förderanfrage BAFA',
-                                    'kfw'             => 'Förderanfrage KfW',
-                                    'kombiniert'      => 'Beratung plus Förderung',
+                                    'foerdercheck_fenster'    => 'Fördercheck für neue Fenster',
+                                    'energieberatung_fenster' => 'Energieberatung für Fenstertausch',
+                                    'bafa_kfw_pruefung'       => 'BAFA/KfW-Förderung prüfen',
+                                    'sanierung_gesamt'        => 'Komplettberatung Sanierung',
                                 ),
                                 'icons'       => array(
-                                    'energieberatung' => 'clipboard-check',
-                                    'bafa'            => 'badge-euro',
-                                    'kfw'             => 'landmark',
-                                    'kombiniert'      => 'sparkles',
+                                    'foerdercheck_fenster'    => 'badge-euro',
+                                    'energieberatung_fenster' => 'clipboard-check',
+                                    'bafa_kfw_pruefung'       => 'landmark',
+                                    'sanierung_gesamt'        => 'sparkles',
                                 ),
                             ),
                         ),
@@ -386,29 +392,48 @@ final class CFH_Form_Definitions {
                         ),
                     ),
                     array(
-                        'title'  => 'Schritt 4 von 5: Welche Maßnahme planen Sie?',
+                        'title'  => 'Schritt 4 von 5: Welche Fenster- oder Türmaßnahme planen Sie?',
                         'fields' => array(
                             array(
                                 'type'        => 'radio_group',
-                                'name'        => 'projectType',
-                                'group_label' => 'Projektart wählen',
+                                'name'        => 'windowProjectType',
+                                'group_label' => 'Maßnahme wählen',
                                 'required'    => true,
                                 'help'        => 'Wählen Sie die Maßnahme, für die Sie Beratung oder Förderung benötigen.',
                                 'options'     => array(
-                                    'sanierung'          => 'Sanierung gesamt',
-                                    'heizung'            => 'Heizung / Wärmepumpe',
-                                    'daemmung'           => 'Dämmung',
-                                    'fenster'            => 'Fenster / Türen',
-                                    'erneuerbare'        => 'Photovoltaik',
-                                    'beratung_allgemein' => 'Allgemeine Beratung',
+                                    'fenster_austauschen' => 'Fenster austauschen',
+                                    'haustuer_aussentuer' => 'Haustür / Außentür austauschen',
+                                    'fenster_tueren'      => 'Fenster und Türen',
+                                    'dachfenster'         => 'Dachfenster',
+                                    'beratung'            => 'Noch unklar / Beratung erwünscht',
                                 ),
                                 'icons'       => array(
-                                    'sanierung'          => 'hammer',
-                                    'heizung'            => 'flame',
-                                    'daemmung'           => 'layers',
-                                    'fenster'            => 'panel-top',
-                                    'erneuerbare'        => 'sun',
-                                    'beratung_allgemein' => 'message-circle',
+                                    'fenster_austauschen' => 'panel-top',
+                                    'haustuer_aussentuer' => 'door-open',
+                                    'fenster_tueren'      => 'building',
+                                    'dachfenster'         => 'house',
+                                    'beratung'            => 'message-circle',
+                                ),
+                            ),
+                            array(
+                                'type'        => 'radio_group',
+                                'name'        => 'windowCount',
+                                'group_label' => 'Anzahl Fenster / Elemente wählen',
+                                'required'    => true,
+                                'help'        => 'Wählen Sie grob aus, wie viele Fenster oder Elemente betroffen sind.',
+                                'options'     => array(
+                                    '1-3'     => '1-3',
+                                    '4-7'     => '4-7',
+                                    '8-12'    => '8-12',
+                                    '13+'     => '13+',
+                                    'unknown' => 'Weiß ich noch nicht',
+                                ),
+                                'icons'       => array(
+                                    '1-3'     => 'panel-top',
+                                    '4-7'     => 'layers',
+                                    '8-12'    => 'building',
+                                    '13+'     => 'briefcase',
+                                    'unknown' => 'message-circle',
                                 ),
                             ),
                         ),

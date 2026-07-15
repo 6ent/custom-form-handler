@@ -41,7 +41,7 @@
             inquiryType: 'invalid_inquiry_type',
             buildingType: 'invalid_building_type',
             ownershipStatus: 'invalid_ownership_status',
-            projectType: 'invalid_project_type',
+            windowProjectType: 'invalid_window_project_type',
             location: 'invalid_location',
             name: 'invalid_name',
             email: 'invalid_email',
@@ -264,11 +264,7 @@
         function isAutoAdvanceStep(step) {
             var requiredRadios = Array.from(step.querySelectorAll('input[type="radio"][required]'));
             if (requiredRadios.length === 0) return false;
-
-            var anyChecked = requiredRadios.some(function (radio) {
-                return radio.checked;
-            });
-            if (!anyChecked) return false;
+            if (!areRequiredRadioGroupsComplete(step)) return false;
 
             var otherRequired = Array.from(step.querySelectorAll('input[required], select[required], textarea[required]')).filter(function (field) {
                 return field.type !== 'radio';
@@ -299,11 +295,23 @@
                 return;
             }
 
-            var anyChecked = Array.from(radios).some(function (radio) {
-                return radio.checked;
+            var complete = areRequiredRadioGroupsComplete(stepEl);
+            nextBtn.disabled = !complete;
+            nextBtn.title = complete ? '' : 'Bitte wählen Sie eine Option';
+        }
+
+        function areRequiredRadioGroupsComplete(stepEl) {
+            var groups = {};
+            Array.from(stepEl.querySelectorAll('input[type="radio"][required]')).forEach(function (radio) {
+                groups[radio.name] = groups[radio.name] || [];
+                groups[radio.name].push(radio);
             });
-            nextBtn.disabled = !anyChecked;
-            nextBtn.title = anyChecked ? '' : 'Bitte wählen Sie eine Option';
+
+            return Object.keys(groups).every(function (name) {
+                return groups[name].some(function (radio) {
+                    return radio.checked;
+                });
+            });
         }
 
         function showFieldError(name, message) {
@@ -327,7 +335,7 @@
         }
 
         function getValidationMessage(name, fallback) {
-            var code = errorCodeByField[name] || '';
+            var code = getErrorCodeForField(name);
             return inlineErrorMessages[code] || fallback || 'Bitte prüfen Sie dieses Feld.';
         }
 
@@ -342,11 +350,23 @@
                 return false;
             });
 
+            if (!fieldName && formType === 'energy_funding' && errorCode === 'invalid_energy_window_count') {
+                fieldName = 'windowCount';
+            }
+
             if (fieldName) {
                 goToFieldStep(fieldName);
                 markInvalidState(form.querySelector('[name="' + cssEscape(fieldName) + '"]'));
                 showFieldError(fieldName, inlineErrorMessages[errorCode]);
             }
+        }
+
+        function getErrorCodeForField(name) {
+            if (formType === 'energy_funding' && name === 'windowCount') {
+                return 'invalid_energy_window_count';
+            }
+
+            return errorCodeByField[name] || '';
         }
 
         function goToFieldStep(fieldName) {
