@@ -242,7 +242,7 @@ final class CFH_Form_Definitions {
                 'intro' => 'Beantworten Sie kurz ein paar Fragen. Wir melden uns mit einer kostenlosen Ersteinschätzung zu Ihrem Vorhaben.',
                 'steps' => array(
                     array(
-                        'title'  => 'Schritt 1 von 5: Welche Art von Fenster möchten Sie?',
+                        'title'  => 'Schritt 1 von 4: Welche Art von Fenster möchten Sie?',
                         'fields' => array(
                             array(
                                 'type'        => 'radio_group',
@@ -260,7 +260,7 @@ final class CFH_Form_Definitions {
                         ),
                     ),
                     array(
-                        'title'  => 'Schritt 2 von 5: Art der Immobilie',
+                        'title'  => 'Schritt 2 von 4: Art der Immobilie',
                         'fields' => array(
                             array(
                                 'type'        => 'radio_group',
@@ -277,7 +277,7 @@ final class CFH_Form_Definitions {
                         ),
                     ),
                     array(
-                        'title'  => 'Schritt 3 von 5: Anzahl der Fenster',
+                        'title'  => 'Schritt 3 von 4: Anzahl der Fenster',
                         'fields' => array(
                             array(
                                 'type'        => 'radio_group',
@@ -294,25 +294,8 @@ final class CFH_Form_Definitions {
                         ),
                     ),
                     array(
-                        'title'  => 'Schritt 4 von 5: Standort des Projekts',
-                        'fields' => array(
-                            array(
-                                'type'         => 'text',
-                                'name'         => 'location',
-                                'label'        => 'Postleitzahl *',
-                                'required'     => true,
-                                'placeholder'  => 'z. B. 10115',
-                                'pattern'      => '^[0-9]{5}$',
-                                'inputmode'    => 'numeric',
-                                'maxlength'    => '5',
-                                'autocomplete' => 'postal-code',
-                                'help'         => 'Bitte geben Sie eine 5-stellige deutsche PLZ an.',
-                            ),
-                        ),
-                    ),
-                    array(
-                        'title'  => 'Schritt 5 von 5: Ihre Kontaktdaten',
-                        'fields' => self::get_contact_fields( false ),
+                        'title'  => 'Schritt 4 von 4: Ihre Kontaktdaten',
+                        'fields' => self::get_contact_fields( true, true ),
                     ),
                 ),
             ),
