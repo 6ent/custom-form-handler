@@ -38,7 +38,6 @@
             windowMaterial: 'invalid_material',
             propertyType: 'invalid_property',
             windowCount: 'invalid_count',
-            inquiryType: 'invalid_inquiry_type',
             buildingType: 'invalid_building_type',
             ownershipStatus: 'invalid_ownership_status',
             windowProjectType: 'invalid_window_project_type',

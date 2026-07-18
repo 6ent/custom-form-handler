@@ -143,21 +143,15 @@ class CFH_Form_Handler {
      * @return array<string,string>|WP_Error
      */
     private function sanitize_energy_form( array $common ): array|WP_Error {
-        $allowed_inquiry_types = array( 'foerdercheck_fenster', 'energieberatung_fenster', 'bafa_kfw_pruefung', 'sanierung_gesamt' );
         $allowed_building_types = array( 'einfamilienhaus', 'mehrfamilienhaus', 'wohnung', 'gewerbe' );
         $allowed_ownership_statuses = array( 'eigentuemer', 'kaeufer', 'verwaltung', 'mieter_sonstiges' );
         $allowed_window_project_types = array( 'fenster_austauschen', 'haustuer_aussentuer', 'fenster_tueren', 'dachfenster', 'beratung' );
         $allowed_window_counts = array( '1-3', '4-7', '8-12', '13+', 'unknown' );
 
-        $inquiry_type        = sanitize_text_field( wp_unslash( $_POST['inquiryType'] ?? '' ) );
         $building_type       = sanitize_text_field( wp_unslash( $_POST['buildingType'] ?? '' ) );
         $ownership_status    = sanitize_text_field( wp_unslash( $_POST['ownershipStatus'] ?? '' ) );
         $window_project_type = sanitize_text_field( wp_unslash( $_POST['windowProjectType'] ?? '' ) );
         $window_count        = sanitize_text_field( wp_unslash( $_POST['windowCount'] ?? '' ) );
-
-        if ( ! in_array( $inquiry_type, $allowed_inquiry_types, true ) ) {
-            return new WP_Error( 'invalid_inquiry_type', 'Ungültige Anfrageart.' );
-        }
 
         if ( ! in_array( $building_type, $allowed_building_types, true ) ) {
             return new WP_Error( 'invalid_building_type', 'Ungültiger Gebäudetyp.' );
@@ -178,7 +172,6 @@ class CFH_Form_Handler {
         return array_merge(
             $common,
             array(
-                'inquiryType'        => $inquiry_type,
                 'buildingType'       => $building_type,
                 'ownershipStatus'    => $ownership_status,
                 'windowProjectType'  => $window_project_type,

@@ -44,7 +44,6 @@ $settings = ( new CFH_Settings() )->get();
             <tr><td><code>windowMaterial</code></td><td>Fenstermaterial (kunststoff / aluminium / holz / beratung)</td></tr>
             <tr><td><code>propertyType</code></td><td>Immobilientyp (house / apartment / commercial)</td></tr>
             <tr><td><code>windowCount</code></td><td>Fensteranzahl (0-10 / 10-20 / 20+)</td></tr>
-            <tr><td><code>inquiryType</code></td><td>Anfrageart (energieberatung / bafa / kfw / kombiniert)</td></tr>
             <tr><td><code>buildingType</code></td><td>Gebäudetyp (einfamilienhaus / mehrfamilienhaus / wohnung / gewerbe)</td></tr>
             <tr><td><code>ownershipStatus</code></td><td>Eigentumsstatus (eigentuemer / kaeufer / verwaltung / mieter_sonstiges)</td></tr>
             <tr><td><code>projectType</code></td><td>Maßnahme (sanierung / heizung / daemmung / fenster / erneuerbare / beratung_allgemein)</td></tr>
@@ -87,7 +86,6 @@ $settings = ( new CFH_Settings() )->get();
             <tr><td><code>invalid_email</code></td><td>Ungültige E-Mail-Adresse, erscheint inline</td></tr>
             <tr><td><code>invalid_phone</code></td><td>Ungültige Telefonnummer, erscheint inline</td></tr>
             <tr><td><code>gdpr_missing</code></td><td>DSGVO-Zustimmung fehlt, erscheint inline</td></tr>
-            <tr><td><code>invalid_inquiry_type</code></td><td>Ungültige Anfrageart, erscheint inline</td></tr>
             <tr><td><code>invalid_building_type</code></td><td>Ungültiger Gebäudetyp, erscheint inline</td></tr>
             <tr><td><code>invalid_ownership_status</code></td><td>Ungültiger Eigentumsstatus, erscheint inline</td></tr>
             <tr><td><code>invalid_project_type</code></td><td>Ungültige Maßnahme, erscheint inline</td></tr>

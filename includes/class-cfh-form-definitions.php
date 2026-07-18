@@ -52,7 +52,6 @@ final class CFH_Form_Definitions {
             return array_merge(
                 $common,
                 array(
-                    'invalid_inquiry_type'     => 'Bitte wählen Sie aus, wofür Sie eine Anfrage stellen.',
                     'invalid_building_type'    => 'Bitte wählen Sie den Gebäudetyp aus.',
                     'invalid_ownership_status' => 'Bitte wählen Sie Ihren Eigentumsstatus aus.',
                     'invalid_window_project_type' => 'Bitte wählen Sie die passende Fenster- oder Türmaßnahme aus.',
@@ -85,7 +84,6 @@ final class CFH_Form_Definitions {
             'invalid_phone',
             'gdpr_missing',
             'invalid_contact_preference',
-            'invalid_inquiry_type',
             'invalid_building_type',
             'invalid_ownership_status',
             'invalid_window_project_type',
@@ -162,10 +160,6 @@ final class CFH_Form_Definitions {
     public static function get_email_detail_rows( string $form_type, array $data ): array {
         if ( $form_type === self::TYPE_ENERGY_FUNDING ) {
             return array(
-                array(
-                    'label' => 'Anfrageart',
-                    'value' => self::get_display_value( $form_type, 'inquiryType', $data['inquiryType'] ?? '' ),
-                ),
                 array(
                     'label' => 'Gebäudetyp',
                     'value' => self::get_display_value( $form_type, 'buildingType', $data['buildingType'] ?? '' ),
@@ -319,55 +313,7 @@ final class CFH_Form_Definitions {
                 'intro' => 'Beantworten Sie kurz ein paar Fragen. Wir prüfen, welche Beratung oder Förderung für Ihren Fenstertausch passt.',
                 'steps' => array(
                     array(
-                        'title'  => 'Schritt 1 von 5: Wofür benötigen Sie Unterstützung?',
-                        'fields' => array(
-                            array(
-                                'type'        => 'radio_group',
-                                'name'        => 'inquiryType',
-                                'group_label' => 'Anfrageart wählen',
-                                'required'    => true,
-                                'help'        => 'Wählen Sie aus, ob Sie einen Fördercheck, Energieberatung oder eine kombinierte Prüfung wünschen.',
-                                'options'     => array(
-                                    'foerdercheck_fenster'    => 'Fördercheck für neue Fenster',
-                                    'energieberatung_fenster' => 'Energieberatung für Fenstertausch',
-                                    'bafa_kfw_pruefung'       => 'BAFA/KfW-Förderung prüfen',
-                                    'sanierung_gesamt'        => 'Komplettberatung Sanierung',
-                                ),
-                                'icons'       => array(
-                                    'foerdercheck_fenster'    => 'badge-euro',
-                                    'energieberatung_fenster' => 'clipboard-check',
-                                    'bafa_kfw_pruefung'       => 'landmark',
-                                    'sanierung_gesamt'        => 'sparkles',
-                                ),
-                            ),
-                        ),
-                    ),
-                    array(
-                        'title'  => 'Schritt 2 von 5: Um welchen Gebäudetyp geht es?',
-                        'fields' => array(
-                            array(
-                                'type'        => 'radio_group',
-                                'name'        => 'buildingType',
-                                'group_label' => 'Gebäudetyp wählen',
-                                'required'    => true,
-                                'help'        => 'Bitte wählen Sie den passenden Gebäudetyp aus.',
-                                'options'     => array(
-                                    'einfamilienhaus' => 'Einfamilienhaus',
-                                    'mehrfamilienhaus' => 'Mehrfamilienhaus',
-                                    'wohnung'         => 'Wohnung',
-                                    'gewerbe'         => 'Gewerbe',
-                                ),
-                                'icons'       => array(
-                                    'einfamilienhaus' => 'home',
-                                    'mehrfamilienhaus' => 'building',
-                                    'wohnung'         => 'door-open',
-                                    'gewerbe'         => 'briefcase',
-                                ),
-                            ),
-                        ),
-                    ),
-                    array(
-                        'title'  => 'Schritt 3 von 5: In welcher Rolle stellen Sie die Anfrage?',
+                        'title'  => 'Schritt 1 von 4: In welcher Rolle stellen Sie die Anfrage?',
                         'fields' => array(
                             array(
                                 'type'        => 'radio_group',
@@ -391,7 +337,31 @@ final class CFH_Form_Definitions {
                         ),
                     ),
                     array(
-                        'title'  => 'Schritt 4 von 5: Welche Fenster- oder Türmaßnahme planen Sie?',
+                        'title'  => 'Schritt 2 von 4: Um welchen Gebäudetyp geht es?',
+                        'fields' => array(
+                            array(
+                                'type'        => 'radio_group',
+                                'name'        => 'buildingType',
+                                'group_label' => 'Gebäudetyp wählen',
+                                'required'    => true,
+                                'help'        => 'Bitte wählen Sie den passenden Gebäudetyp aus.',
+                                'options'     => array(
+                                    'einfamilienhaus' => 'Einfamilienhaus',
+                                    'mehrfamilienhaus' => 'Mehrfamilienhaus',
+                                    'wohnung'         => 'Wohnung',
+                                    'gewerbe'         => 'Gewerbe',
+                                ),
+                                'icons'       => array(
+                                    'einfamilienhaus' => 'home',
+                                    'mehrfamilienhaus' => 'building',
+                                    'wohnung'         => 'door-open',
+                                    'gewerbe'         => 'briefcase',
+                                ),
+                            ),
+                        ),
+                    ),
+                    array(
+                        'title'  => 'Schritt 3 von 4: Welche Fenster- oder Türmaßnahme planen Sie?',
                         'fields' => array(
                             array(
                                 'type'        => 'radio_group',
@@ -438,7 +408,7 @@ final class CFH_Form_Definitions {
                         ),
                     ),
                     array(
-                        'title'  => 'Schritt 5 von 5: Ihre Kontaktdaten',
+                        'title'  => 'Schritt 4 von 4: Ihre Kontaktdaten',
                         'fields' => self::get_contact_fields( true, true ),
                     ),
                 ),
