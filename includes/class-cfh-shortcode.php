@@ -61,14 +61,15 @@ class CFH_Shortcode {
 
                 <?php foreach ( $steps as $index => $step ) : ?>
                     <div class="cfh-step<?php echo 0 === $index ? ' active' : ''; ?>" data-step="<?php echo esc_attr( (string) ( $index + 1 ) ); ?>">
-                        <h2><?php echo esc_html( $step['title'] ); ?></h2>
+                        <h2><?php echo esc_html( sprintf( 'Schritt %1$d von %2$d: %3$s', $index + 1, $total, $step['title'] ) ); ?></h2>
                         <?php
                         if ( $index === $total - 1 ) {
                             $this->render_summary( $steps, $index );
+                            $this->render_completion_note( $form['completion_note'] ?? array() );
                         }
                         ?>
                         <?php $this->render_fields( $step['fields'], $instance ); ?>
-                        <?php $this->render_navigation( $index, $total ); ?>
+                        <?php $this->render_navigation( $index, $total, $form['completion_note']['cta'] ?? '' ); ?>
                     </div>
                 <?php endforeach; ?>
 
@@ -268,6 +269,19 @@ class CFH_Shortcode {
         <?php
     }
 
+    /** @param array<string,string> $note */
+    private function render_completion_note( array $note ): void {
+        if ( empty( $note['title'] ) || empty( $note['text'] ) ) {
+            return;
+        }
+        ?>
+        <aside class="cfh-completion-note" aria-label="Hinweis zur Anfrage">
+            <strong><?php echo esc_html( $note['title'] ); ?></strong>
+            <p><?php echo esc_html( $note['text'] ); ?></p>
+        </aside>
+        <?php
+    }
+
     private function render_icon( string $name, string $class = 'cfh-icon' ): string {
         $icons = array(
             'badge-euro'      => '<circle cx="12" cy="12" r="10"></circle><path d="M15 8.5a4 4 0 0 0-6 3.5 4 4 0 0 0 6 3.5"></path><path d="M7 10h5"></path><path d="M7 14h5"></path>',
@@ -305,7 +319,7 @@ class CFH_Shortcode {
         );
     }
 
-    private function render_navigation( int $index, int $total ): void {
+    private function render_navigation( int $index, int $total, string $submit_label = '' ): void {
         $is_first = 0 === $index;
         $is_last  = $index === $total - 1;
         ?>
@@ -315,7 +329,7 @@ class CFH_Shortcode {
             <?php endif; ?>
 
             <?php if ( $is_last ) : ?>
-                <button type="submit" class="cfh-btn cfh-btn--submit">Kostenlose Ersteinschätzung anfragen</button>
+                <button type="submit" class="cfh-btn cfh-btn--submit"><?php echo esc_html( $submit_label ?: 'Kostenlose Ersteinschätzung erhalten' ); ?></button>
             <?php else : ?>
                 <button type="button" class="cfh-btn cfh-btn--next">Weiter</button>
             <?php endif; ?>

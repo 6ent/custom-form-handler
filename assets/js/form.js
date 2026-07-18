@@ -45,8 +45,7 @@
             name: 'invalid_name',
             email: 'invalid_email',
             phone: 'invalid_phone',
-            gdpr_consent: 'gdpr_missing',
-            contactPreference: 'invalid_contact_preference'
+            gdpr_consent: 'gdpr_missing'
         };
 
         if (!form || steps.length === 0) return;
@@ -62,6 +61,8 @@
         steps.forEach(function (step) {
             syncNextButton(step);
         });
+
+        dispatchFunnelEvent('form_view');
 
         form.addEventListener('click', function (e) {
             var target = e.target;
@@ -122,12 +123,14 @@
         form.addEventListener('submit', function (e) {
             if (!validateStep(currentIndex)) {
                 e.preventDefault();
+                dispatchFunnelEvent('validation_error');
                 showError('Bitte füllen Sie alle Pflichtfelder korrekt aus.');
                 return;
             }
 
             hideError();
             clearState();
+            dispatchFunnelEvent('form_submit');
 
             if (submitBtn) {
                 submitBtn.disabled = true;
@@ -145,11 +148,13 @@
             clearAutoAdvance();
 
             if (!validateStep(currentIndex)) {
+                dispatchFunnelEvent('validation_error');
                 showError('Bitte wählen Sie eine Option oder füllen Sie alle Pflichtfelder korrekt aus.');
                 return;
             }
 
             hideError();
+            dispatchFunnelEvent('step_complete');
             steps[currentIndex].classList.remove('active');
             currentIndex = Math.min(currentIndex + 1, steps.length - 1);
             steps[currentIndex].classList.add('active');
@@ -163,6 +168,7 @@
         function retreat() {
             clearAutoAdvance();
             hideError();
+            dispatchFunnelEvent('step_back');
             steps[currentIndex].classList.remove('active');
             currentIndex = Math.max(currentIndex - 1, 0);
             steps[currentIndex].classList.add('active');
@@ -608,6 +614,18 @@
             var nextQuery = cleanedParams.toString();
             var cleanUrl = window.location.pathname + (nextQuery ? '?' + nextQuery : '') + window.location.hash;
             window.history.replaceState(null, '', cleanUrl);
+        }
+
+        function dispatchFunnelEvent(eventName) {
+            wrap.dispatchEvent(new CustomEvent('cfh:form-event', {
+                bubbles: true,
+                detail: {
+                    event: eventName,
+                    formType: formType,
+                    step: currentIndex + 1,
+                    totalSteps: steps.length
+                }
+            }));
         }
     }
 

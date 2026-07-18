@@ -178,6 +178,26 @@
     font-weight: bold;
 }
 
+.cfh-completion-note {
+    margin: 0 0 18px;
+    padding: 14px 16px;
+    border-left: 4px solid var(--cfh-accent);
+    border-radius: 0 var(--cfh-radius) var(--cfh-radius) 0;
+    background: #fff4ec;
+    color: var(--cfh-text);
+}
+
+.cfh-completion-note strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.cfh-completion-note p {
+    margin: 0;
+    font-size: 0.9em;
+    line-height: 1.5;
+}
+
 /* Radio button groups */
 .cfh-btn-group {
     display: flex;
@@ -307,6 +327,11 @@
 .cfh-btn--next:hover,
 .cfh-btn--submit:hover {
     background: var(--cfh-accent-dark);
+}
+
+.cfh-btn:focus-visible {
+    outline: 3px solid var(--cfh-accent-dark);
+    outline-offset: 3px;
 }
 
 .cfh-btn--prev {

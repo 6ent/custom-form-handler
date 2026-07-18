@@ -58,18 +58,6 @@
                 <td style="padding:12px 16px;color:#666;font-size:14px;vertical-align:top;">Telefon</td>
                 <td style="padding:12px 16px;color:#333;font-size:14px;"><?php echo $phone; ?></td>
               </tr>
-              <?php if ( $contact_preference !== '' ) : ?>
-                <tr style="border-top:1px solid #eee;background:#fafafa;">
-                  <td style="padding:12px 16px;color:#666;font-size:14px;vertical-align:top;">Kontaktwunsch</td>
-                  <td style="padding:12px 16px;color:#333;font-size:14px;"><?php echo $contact_preference; ?></td>
-                </tr>
-              <?php endif; ?>
-              <?php if ( $preferred_contact_time !== '' ) : ?>
-                <tr style="border-top:1px solid #eee;">
-                  <td style="padding:12px 16px;color:#666;font-size:14px;vertical-align:top;">Beste Kontaktzeit</td>
-                  <td style="padding:12px 16px;color:#333;font-size:14px;"><?php echo $preferred_contact_time; ?></td>
-                </tr>
-              <?php endif; ?>
             </table>
 
             <?php if ( ! empty( $tracking_rows ) ) : ?>

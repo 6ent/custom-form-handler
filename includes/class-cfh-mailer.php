@@ -66,8 +66,6 @@ class CFH_Mailer {
         $name           = esc_html( $data['name'] );
         $email          = esc_html( $data['email'] );
         $phone          = esc_html( $data['phone'] ?: '-' );
-        $contact_preference = esc_html( CFH_Form_Definitions::get_display_value( $form_type, 'contactPreference', $data['contactPreference'] ?? '' ) );
-        $preferred_contact_time = esc_html( $data['preferredContactTime'] ?? '' );
         $tracking_rows  = $this->build_tracking_rows( $data );
         $submitted      = esc_html( wp_date( 'd.m.Y H:i', time() ) );
         $reply_subject  = rawurlencode( CFH_Form_Definitions::get_reply_subject( $form_type ) );

@@ -16,6 +16,9 @@ WordPress-Plugin für Multi-Step-Lead-Formulare mit:
 - Rate-Limit pro IP
 - Inline-Fehler für Feldvalidierung
 - Pop-up-Fehler bei technischen Absendeproblemen
+- Schlanker Kontaktabschluss: PLZ, Name, E-Mail, optionale Telefonnummer und DSGVO-Zustimmung
+- Formulartyp-spezifischer Abschluss-Hinweis und CTA
+- Browser-Custom-Events für datensparsame Funnel-Messung
 - GitHub-Release-Workflow für Updates
 
 ## Shortcodes
@@ -38,6 +41,26 @@ Unter `Einstellungen > Form Handler` können konfiguriert werden:
 - n8n Webhook URL
 - n8n Webhook Secret
 - GitHub Repository
+
+## Funnel-Events
+
+Das Plugin löst auf dem jeweiligen Formular-Container das browserseitige Event `cfh:form-event` aus. Es werden keine personenbezogenen Daten übertragen. Eine Analytics- oder Consent-Lösung kann das Event erst nach erteilter Einwilligung auswerten.
+
+`event.detail` enthält:
+
+- `event`: `form_view`, `step_complete`, `step_back`, `validation_error` oder `form_submit`
+- `formType`: `window` oder `energy_funding`
+- `step`: aktuelle Schrittzahl
+- `totalSteps`: Gesamtzahl der Schritte
+
+Beispiel für eine nachgelagerte Integration:
+
+```js
+document.addEventListener('cfh:form-event', (event) => {
+	// Nur nach Zustimmung an die eigene Analytics-Lösung weitergeben.
+	console.log(event.detail);
+});
+```
 
 ## Automatische Updates
 

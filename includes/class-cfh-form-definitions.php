@@ -45,7 +45,6 @@ final class CFH_Form_Definitions {
             'invalid_email'    => 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',
             'invalid_phone'    => 'Die angegebene Telefonnummer ist ungültig.',
             'gdpr_missing'     => 'Bitte stimmen Sie der Datenschutzerklärung zu.',
-            'invalid_contact_preference' => 'Bitte wählen Sie eine gültige Kontaktart aus.',
         );
 
         if ( $form_type === self::TYPE_ENERGY_FUNDING ) {
@@ -83,7 +82,6 @@ final class CFH_Form_Definitions {
             'invalid_email',
             'invalid_phone',
             'gdpr_missing',
-            'invalid_contact_preference',
             'invalid_building_type',
             'invalid_ownership_status',
             'invalid_window_project_type',
@@ -234,9 +232,14 @@ final class CFH_Form_Definitions {
         return array(
             self::TYPE_WINDOW => array(
                 'intro' => 'Beantworten Sie kurz ein paar Fragen. Wir melden uns mit einer kostenlosen Ersteinschätzung zu Ihrem Vorhaben.',
+                'completion_note' => array(
+                    'title' => 'Kostenlos und unverbindlich',
+                    'text'  => 'Sie erhalten eine persönliche Ersteinschätzung zu Ihrem Vorhaben. Wir verwenden Ihre Angaben ausschließlich zur Bearbeitung Ihrer Anfrage.',
+                    'cta'   => 'Kostenlose Ersteinschätzung erhalten',
+                ),
                 'steps' => array(
                     array(
-                        'title'  => 'Schritt 1 von 4: Welche Art von Fenster möchten Sie?',
+                        'title'  => 'Welche Art von Fenster möchten Sie?',
                         'fields' => array(
                             array(
                                 'type'        => 'radio_group',
@@ -260,7 +263,7 @@ final class CFH_Form_Definitions {
                         ),
                     ),
                     array(
-                        'title'  => 'Schritt 2 von 4: Art der Immobilie',
+                        'title'  => 'Art der Immobilie',
                         'fields' => array(
                             array(
                                 'type'        => 'radio_group',
@@ -282,7 +285,7 @@ final class CFH_Form_Definitions {
                         ),
                     ),
                     array(
-                        'title'  => 'Schritt 3 von 4: Anzahl der Fenster',
+                        'title'  => 'Anzahl der Fenster',
                         'fields' => array(
                             array(
                                 'type'        => 'radio_group',
@@ -304,16 +307,21 @@ final class CFH_Form_Definitions {
                         ),
                     ),
                     array(
-                        'title'  => 'Schritt 4 von 4: Ihre Kontaktdaten',
+                        'title'  => 'Ihre Kontaktdaten',
                         'fields' => self::get_contact_fields( true, true ),
                     ),
                 ),
             ),
             self::TYPE_ENERGY_FUNDING => array(
                 'intro' => 'Beantworten Sie kurz ein paar Fragen. Wir prüfen, welche Beratung oder Förderung für Ihren Fenstertausch passt.',
+                'completion_note' => array(
+                    'title' => 'Kostenlos und unverbindlich',
+                    'text'  => 'Sie erhalten eine persönliche Ersteinschätzung zu Beratung und passenden Fördermöglichkeiten. Wir verwenden Ihre Angaben ausschließlich zur Bearbeitung Ihrer Anfrage.',
+                    'cta'   => 'Kostenlose Ersteinschätzung erhalten',
+                ),
                 'steps' => array(
                     array(
-                        'title'  => 'Schritt 1 von 4: In welcher Rolle stellen Sie die Anfrage?',
+                        'title'  => 'In welcher Rolle stellen Sie die Anfrage?',
                         'fields' => array(
                             array(
                                 'type'        => 'radio_group',
@@ -337,7 +345,7 @@ final class CFH_Form_Definitions {
                         ),
                     ),
                     array(
-                        'title'  => 'Schritt 2 von 4: Um welchen Gebäudetyp geht es?',
+                        'title'  => 'Um welchen Gebäudetyp geht es?',
                         'fields' => array(
                             array(
                                 'type'        => 'radio_group',
@@ -361,7 +369,7 @@ final class CFH_Form_Definitions {
                         ),
                     ),
                     array(
-                        'title'  => 'Schritt 3 von 4: Welche Fenster- oder Türmaßnahme planen Sie?',
+                        'title'  => 'Welche Fenster- oder Türmaßnahme planen Sie?',
                         'fields' => array(
                             array(
                                 'type'        => 'radio_group',
@@ -384,6 +392,11 @@ final class CFH_Form_Definitions {
                                     'beratung'            => 'message-circle',
                                 ),
                             ),
+                        ),
+                    ),
+                    array(
+                        'title'  => 'Wie viele Fenster oder Elemente sind betroffen?',
+                        'fields' => array(
                             array(
                                 'type'        => 'radio_group',
                                 'name'        => 'windowCount',
@@ -408,7 +421,7 @@ final class CFH_Form_Definitions {
                         ),
                     ),
                     array(
-                        'title'  => 'Schritt 4 von 4: Ihre Kontaktdaten',
+                        'title'  => 'Ihre Kontaktdaten',
                         'fields' => self::get_contact_fields( true, true ),
                     ),
                 ),
@@ -467,33 +480,6 @@ final class CFH_Form_Definitions {
                 'pattern'      => '\+?[\d\s\-]{6,20}',
                 'autocomplete' => 'tel',
                 'icon'         => $include_icons ? 'phone' : '',
-            ),
-            array(
-                'type'        => 'radio_group',
-                'name'        => 'contactPreference',
-                'group_label' => 'Wie möchten Sie kontaktiert werden?',
-                'required'    => false,
-                'help'        => 'Optional - wählen Sie, was für Sie am bequemsten ist.',
-                'options'     => array(
-                    'phone' => 'Telefon',
-                    'email' => 'E-Mail',
-                    'any'   => 'Egal',
-                ),
-                'icons'       => $include_icons ? array(
-                    'phone' => 'phone',
-                    'email' => 'mail',
-                    'any'   => 'message-circle',
-                ) : array(),
-            ),
-            array(
-                'type'         => 'text',
-                'name'         => 'preferredContactTime',
-                'label'        => 'Wann passen wir Sie am besten?',
-                'label_suffix' => '<span class="cfh-optional">(optional)</span>',
-                'placeholder'  => 'z. B. vormittags oder ab 17 Uhr',
-                'maxlength'    => '80',
-                'autocomplete' => 'off',
-                'icon'         => $include_icons ? 'clock' : '',
             ),
             array(
                 'type'     => 'checkbox',
