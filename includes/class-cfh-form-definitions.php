@@ -369,12 +369,12 @@ final class CFH_Form_Definitions {
                         ),
                     ),
                     array(
-                        'title'  => 'Welche Fenster- oder Türmaßnahme planen Sie?',
+                        'title'  => 'Welche Maßnahmen planen Sie?',
                         'fields' => array(
                             array(
                                 'type'        => 'radio_group',
                                 'name'        => 'windowProjectType',
-                                'group_label' => 'Maßnahme wählen',
+                                'group_label' => 'Maßnahmen wählen',
                                 'required'    => true,
                                 'help'        => 'Wählen Sie die Maßnahme, für die Sie Beratung oder Förderung benötigen.',
                                 'options'     => array(
@@ -382,6 +382,7 @@ final class CFH_Form_Definitions {
                                     'haustuer_aussentuer' => 'Haustür / Außentür austauschen',
                                     'fenster_tueren'      => 'Fenster und Türen',
                                     'dachfenster'         => 'Dachfenster',
+                                    'komplettsanierung'   => 'Komplettsanierung',
                                     'beratung'            => 'Noch unklar / Beratung erwünscht',
                                 ),
                                 'icons'       => array(
@@ -389,6 +390,7 @@ final class CFH_Form_Definitions {
                                     'haustuer_aussentuer' => 'door-open',
                                     'fenster_tueren'      => 'building',
                                     'dachfenster'         => 'house',
+                                    'komplettsanierung'   => 'hammer',
                                     'beratung'            => 'message-circle',
                                 ),
                             ),

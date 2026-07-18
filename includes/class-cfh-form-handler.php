@@ -145,7 +145,7 @@ class CFH_Form_Handler {
     private function sanitize_energy_form( array $common ): array|WP_Error {
         $allowed_building_types = array( 'einfamilienhaus', 'mehrfamilienhaus', 'wohnung', 'gewerbe' );
         $allowed_ownership_statuses = array( 'eigentuemer', 'kaeufer', 'verwaltung', 'mieter_sonstiges' );
-        $allowed_window_project_types = array( 'fenster_austauschen', 'haustuer_aussentuer', 'fenster_tueren', 'dachfenster', 'beratung' );
+        $allowed_window_project_types = array( 'fenster_austauschen', 'haustuer_aussentuer', 'fenster_tueren', 'dachfenster', 'komplettsanierung', 'beratung' );
         $allowed_window_counts = array( '1-3', '4-7', '8-12', '13+', 'unknown' );
 
         $building_type       = sanitize_text_field( wp_unslash( $_POST['buildingType'] ?? '' ) );
