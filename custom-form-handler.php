@@ -3,7 +3,7 @@
  * Plugin Name:  Custom Form Handler
  * Plugin URI:   https://nrghaus.de
  * Description:  Verarbeitet Multi-Step-Lead-Formulare für Fenster und Energieberatung/Förderanfragen mit CSRF-Schutz, Honeypot, DSGVO-Checkbox, HTML-E-Mail, n8n-Webhook-Weiterleitung und Admin-Einstellungen.
- * Version:      2.4.11
+ * Version:      2.4.12
  * Author:       Gentrit Cerimi
  * Requires PHP: 8.1
  * Requires at least: 5.8
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'CFH_VERSION',     '2.4.11' );
+define( 'CFH_VERSION',     '2.4.12' );
 define( 'CFH_PLUGIN_FILE', __FILE__ );
 define( 'CFH_PLUGIN_DIR',  plugin_dir_path( __FILE__ ) );
 define( 'CFH_PLUGIN_URL',  plugin_dir_url( __FILE__ ) );
