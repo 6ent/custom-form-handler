@@ -5,6 +5,7 @@ WordPress-Plugin für Multi-Step-Lead-Formulare mit:
 - Fenster-Anfragen
 - Energieberatung / BAFA / KfW
 - HTML-E-Mail-Versand
+- lokale Lead-Speicherung vor E-Mail/Webhook
 - n8n-Webhook
 - GitHub-basierte Plugin-Updates
 
@@ -12,7 +13,8 @@ WordPress-Plugin für Multi-Step-Lead-Formulare mit:
 
 - Multi-Step-Formulare ohne jQuery
 - Serverseitige Validierung
-- Nonce-Schutz und Honeypot
+- Lokales Lead-Backup im WordPress-Admin unter `Einstellungen > Gespeicherte Leads`
+- Nonce-Schutz und nicht-blockierendes Honeypot-Logging
 - Rate-Limit pro IP
 - Inline-Fehler für Feldvalidierung
 - Pop-up-Fehler bei technischen Absendeproblemen

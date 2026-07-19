@@ -14,9 +14,9 @@ class CFH_Mailer {
      * @param array<string,mixed>  $settings
      */
     public function send( array $data, array $settings ): bool {
-        $to = sanitize_email( $settings['recipient_email'] );
-        if ( ! is_email( $to ) ) {
-            error_log( '[CFH] Kein gültiger Empfänger konfiguriert.' );
+        $to = $this->resolve_recipient_email( $settings );
+        if ( $to === '' ) {
+            error_log( '[CFH] Kein gültiger Empfänger und keine gültige WordPress-Admin-E-Mail verfügbar.' );
             return false;
         }
 
@@ -31,6 +31,24 @@ class CFH_Mailer {
         }
 
         return $sent;
+    }
+
+    /**
+     * @param array<string,mixed> $settings
+     */
+    private function resolve_recipient_email( array $settings ): string {
+        $configured_email = sanitize_email( $settings['recipient_email'] ?? '' );
+        if ( is_email( $configured_email ) ) {
+            return $configured_email;
+        }
+
+        $admin_email = sanitize_email( get_option( 'admin_email' ) );
+        if ( is_email( $admin_email ) ) {
+            error_log( '[CFH] Ungültiger Lead-Empfänger konfiguriert; WordPress-Admin-E-Mail wird als Fallback verwendet.' );
+            return $admin_email;
+        }
+
+        return '';
     }
 
     /** @return string[] */

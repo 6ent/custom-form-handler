@@ -98,6 +98,7 @@ final class CFH_Form_Definitions {
             'rate_limit'        => 'Sie haben gerade mehrere Anfragen gesendet. Bitte warten Sie kurz und versuchen Sie es dann erneut.',
             'security'          => 'Die Anfrage konnte nicht verarbeitet werden. Bitte laden Sie die Seite neu und versuchen Sie es erneut.',
             'method'            => 'Die Anfrage konnte nicht verarbeitet werden. Bitte versuchen Sie es erneut.',
+            'storage_failed'    => 'Ihre Anfrage konnte gerade nicht lokal gesichert werden. Bitte versuchen Sie es erneut.',
             'invalid_form_type' => 'Die Anfrage konnte nicht verarbeitet werden. Bitte laden Sie die Seite neu und versuchen Sie es erneut.',
             'unknown'           => 'Es ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es später erneut.',
         );

@@ -36,7 +36,7 @@ class CFH_Form_Handler {
         }
 
         if ( ! empty( $_POST['cfh_hp_name'] ) ) {
-            $this->redirect_success( $settings );
+            error_log( '[CFH] Honeypot-Feld war gefüllt; Einreichung wird trotzdem validiert und verarbeitet.' );
         }
 
         if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || $_SERVER['REQUEST_METHOD'] !== 'POST' ) {
@@ -50,11 +50,21 @@ class CFH_Form_Handler {
             $this->redirect_error( $settings, $data->get_error_code(), $this->get_form_type() );
         }
 
+        $lead_storage = new CFH_Lead_Storage();
+        $lead_id      = $lead_storage->store( $data );
+
+        if ( is_wp_error( $lead_id ) ) {
+            error_log( '[CFH] Lead konnte nicht lokal gespeichert werden: ' . $lead_id->get_error_message() );
+            $this->redirect_error( $settings, 'storage_failed', $data['formType'] );
+        }
+
         $this->increment_rate_counter();
 
         $mail_sent = ( new CFH_Mailer() )->send( $data, $settings );
+        $lead_storage->mark_mail_status( $lead_id, $mail_sent ? 'sent' : 'failed' );
 
         ( new CFH_Webhook() )->trigger( $data, $settings );
+        $lead_storage->mark_webhook_status( $lead_id, empty( $settings['n8n_webhook_url'] ) ? 'skipped' : 'triggered' );
 
         if ( $mail_sent ) {
             $this->redirect_success( $settings );

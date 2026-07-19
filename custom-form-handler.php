@@ -29,6 +29,7 @@ define( 'CFH_GITHUB_REPOSITORY', '6ent/custom-form-handler' );
 
 require_once CFH_PLUGIN_DIR . 'includes/class-cfh-settings.php';
 require_once CFH_PLUGIN_DIR . 'includes/class-cfh-form-definitions.php';
+require_once CFH_PLUGIN_DIR . 'includes/class-cfh-lead-storage.php';
 require_once CFH_PLUGIN_DIR . 'includes/class-cfh-mailer.php';
 require_once CFH_PLUGIN_DIR . 'includes/class-cfh-webhook.php';
 require_once CFH_PLUGIN_DIR . 'includes/class-cfh-form-handler.php';
@@ -58,6 +59,9 @@ final class CFH_Plugin {
 
         // Front-end: form submission
         ( new CFH_Form_Handler() )->register();
+
+        // Local lead backup
+        ( new CFH_Lead_Storage() )->register();
 
         // Shortcode
         ( new CFH_Shortcode() )->register();

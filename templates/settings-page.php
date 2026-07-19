@@ -35,6 +35,14 @@ $settings = ( new CFH_Settings() )->get();
     </p>
 
     <hr>
+    <h2>Lokale Lead-Speicherung</h2>
+    <p>
+        Gültige Leads werden vor E-Mail- und Webhook-Versand lokal gespeichert. Sie finden die gespeicherten
+        Datensätze unter <strong>Einstellungen &gt; Gespeicherte Leads</strong>. Dort sehen Sie auch, ob der
+        E-Mail-Versand erfolgreich war oder fehlgeschlagen ist.
+    </p>
+
+    <hr>
     <h2>n8n Webhook &mdash; gesendete Felder</h2>
     <p>Folgende JSON-Felder werden an den Webhook übertragen:</p>
     <table class="widefat" style="max-width:600px;">
