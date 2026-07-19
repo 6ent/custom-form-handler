@@ -121,10 +121,12 @@
         });
 
         form.addEventListener('submit', function (e) {
-            if (!validateStep(currentIndex)) {
+            if (!validateThrough(steps.length - 1, {
+                focus: true,
+                message: 'Bitte füllen Sie alle Pflichtfelder korrekt aus.'
+            })) {
                 e.preventDefault();
                 dispatchFunnelEvent('validation_error');
-                showError('Bitte füllen Sie alle Pflichtfelder korrekt aus.');
                 return;
             }
 
@@ -147,17 +149,17 @@
         function advance() {
             clearAutoAdvance();
 
-            if (!validateStep(currentIndex)) {
+            if (!validateThrough(currentIndex, {
+                focus: true,
+                message: 'Bitte wählen Sie eine Option oder füllen Sie alle Pflichtfelder korrekt aus.'
+            })) {
                 dispatchFunnelEvent('validation_error');
-                showError('Bitte wählen Sie eine Option oder füllen Sie alle Pflichtfelder korrekt aus.');
                 return;
             }
 
             hideError();
             dispatchFunnelEvent('step_complete');
-            steps[currentIndex].classList.remove('active');
-            currentIndex = Math.min(currentIndex + 1, steps.length - 1);
-            steps[currentIndex].classList.add('active');
+            setCurrentStep(Math.min(currentIndex + 1, steps.length - 1));
             syncNextButton(steps[currentIndex]);
             focusFirstField(steps[currentIndex]);
             updateUI();
@@ -169,16 +171,56 @@
             clearAutoAdvance();
             hideError();
             dispatchFunnelEvent('step_back');
-            steps[currentIndex].classList.remove('active');
-            currentIndex = Math.max(currentIndex - 1, 0);
-            steps[currentIndex].classList.add('active');
+            setCurrentStep(Math.max(currentIndex - 1, 0));
             updateUI();
             updateSummary();
             saveState();
         }
 
+        function setCurrentStep(index) {
+            var targetIndex = Math.max(0, Math.min(index, steps.length - 1));
+
+            if (targetIndex === currentIndex) return;
+
+            steps[currentIndex].classList.remove('active');
+            currentIndex = targetIndex;
+            steps[currentIndex].classList.add('active');
+        }
+
+        function validateThrough(targetIndex, options) {
+            var lastIndex = Math.max(0, Math.min(targetIndex, steps.length - 1));
+            var firstInvalid = findFirstInvalidStep(lastIndex);
+
+            if (firstInvalid === -1) return true;
+
+            if (options && options.focus) {
+                setCurrentStep(firstInvalid);
+                syncNextButton(steps[currentIndex]);
+                updateUI();
+                updateSummary();
+                focusFirstField(steps[currentIndex]);
+            }
+
+            showError(options && options.message ? options.message : 'Bitte prüfen Sie Ihre Angaben.');
+            return false;
+        }
+
+        function findFirstInvalidStep(targetIndex) {
+            var lastIndex = Math.max(0, Math.min(targetIndex, steps.length - 1));
+
+            for (var i = 0; i <= lastIndex; i++) {
+                if (!validateStep(i)) {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
         function validateStep(index) {
             var step = steps[index];
+            if (!step) return false;
+
             var radioGroups = {};
             var fields = step.querySelectorAll('input, select, textarea');
             var valid = true;
@@ -571,9 +613,15 @@
                 });
 
                 var targetStep = Math.min(state.step, steps.length - 1);
-                steps[currentIndex].classList.remove('active');
-                currentIndex = targetStep;
-                steps[currentIndex].classList.add('active');
+                var firstInvalidPreviousStep = targetStep > 0 ? findFirstInvalidStep(targetStep - 1) : -1;
+
+                if (firstInvalidPreviousStep !== -1) {
+                    targetStep = firstInvalidPreviousStep;
+                    showError('Bitte prüfen Sie Ihre bisherigen Angaben, bevor Sie fortfahren.');
+                }
+
+                setCurrentStep(targetStep);
+                syncNextButton(steps[currentIndex]);
             } catch (e) {
                 // Korrupter State - ignorieren.
             }

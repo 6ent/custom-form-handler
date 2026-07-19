@@ -35,16 +35,44 @@ class CFH_Mailer {
 
     /** @return string[] */
     private function build_headers( array $data, array $settings ): array {
-        $form_type  = $data['formType'] ?? CFH_Form_Definitions::TYPE_WINDOW;
+        $form_type         = $data['formType'] ?? CFH_Form_Definitions::TYPE_WINDOW;
         $from_name_setting = sanitize_text_field( $settings['from_name'] ?? '' );
-        $from_name  = $this->resolve_from_name( $form_type, $from_name_setting );
-        $from_email = is_email( $data['email'] ) ? $data['email'] : get_option( 'admin_email' );
+        $from_name         = $this->clean_header_text( $this->resolve_from_name( $form_type, $from_name_setting ) );
+        $from_email        = $this->resolve_from_email();
+        $reply_to_name     = $this->clean_header_text( $data['name'] ?? '' );
+        $reply_to_email    = sanitize_email( $data['email'] ?? '' );
 
-        return array(
+        $headers = array(
             'Content-Type: text/html; charset=UTF-8',
             "From: {$from_name} <{$from_email}>",
-            "Reply-To: {$data['name']} <{$from_email}>",
         );
+
+        if ( is_email( $reply_to_email ) ) {
+            $headers[] = "Reply-To: {$reply_to_name} <{$reply_to_email}>";
+        }
+
+        return $headers;
+    }
+
+    private function resolve_from_email(): string {
+        $host = wp_parse_url( home_url(), PHP_URL_HOST );
+        if ( is_string( $host ) && $host !== '' ) {
+            $domain_email = sanitize_email( 'wordpress@' . preg_replace( '/^www\./', '', $host ) );
+            if ( is_email( $domain_email ) ) {
+                return $domain_email;
+            }
+        }
+
+        $admin_email = sanitize_email( get_option( 'admin_email' ) );
+        if ( is_email( $admin_email ) ) {
+            return $admin_email;
+        }
+
+        return 'wordpress@localhost.localdomain';
+    }
+
+    private function clean_header_text( string $value ): string {
+        return trim( preg_replace( '/[\r\n]+/', ' ', $value ) ?? '' );
     }
 
     /**

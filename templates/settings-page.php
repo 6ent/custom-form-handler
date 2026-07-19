@@ -46,7 +46,7 @@ $settings = ( new CFH_Settings() )->get();
             <tr><td><code>windowCount</code></td><td>Fensteranzahl (0-10 / 10-20 / 20+)</td></tr>
             <tr><td><code>buildingType</code></td><td>Gebäudetyp (einfamilienhaus / mehrfamilienhaus / wohnung / gewerbe)</td></tr>
             <tr><td><code>ownershipStatus</code></td><td>Eigentumsstatus (eigentuemer / kaeufer / verwaltung / mieter_sonstiges)</td></tr>
-            <tr><td><code>projectType</code></td><td>Maßnahme (sanierung / heizung / daemmung / fenster / erneuerbare / beratung_allgemein)</td></tr>
+            <tr><td><code>windowProjectType</code></td><td>Fenster-/Tür-Maßnahme (fenster_austauschen / haustuer_aussentuer / fenster_tueren / dachfenster / komplettsanierung / beratung)</td></tr>
             <tr><td><code>location</code></td><td>PLZ (5 Ziffern)</td></tr>
             <tr><td><code>name</code></td><td>Vor- und Nachname</td></tr>
             <tr><td><code>email</code></td><td>E-Mail-Adresse</td></tr>
@@ -88,7 +88,8 @@ $settings = ( new CFH_Settings() )->get();
             <tr><td><code>gdpr_missing</code></td><td>DSGVO-Zustimmung fehlt, erscheint inline</td></tr>
             <tr><td><code>invalid_building_type</code></td><td>Ungültiger Gebäudetyp, erscheint inline</td></tr>
             <tr><td><code>invalid_ownership_status</code></td><td>Ungültiger Eigentumsstatus, erscheint inline</td></tr>
-            <tr><td><code>invalid_project_type</code></td><td>Ungültige Maßnahme, erscheint inline</td></tr>
+            <tr><td><code>invalid_window_project_type</code></td><td>Ungültige Fenster- oder Türmaßnahme, erscheint inline</td></tr>
+            <tr><td><code>invalid_energy_window_count</code></td><td>Ungültige Fenster- oder Elementanzahl, erscheint inline</td></tr>
         </tbody>
     </table>
 </div>

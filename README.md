@@ -16,6 +16,8 @@ WordPress-Plugin für Multi-Step-Lead-Formulare mit:
 - Rate-Limit pro IP
 - Inline-Fehler für Feldvalidierung
 - Pop-up-Fehler bei technischen Absendeproblemen
+- Schrittwechsel und Absenden werden blockiert, bis alle Pflichtfelder gültig sind
+- Zustellfreundliche E-Mail-Header: technische Absenderadresse, Lead-Adresse als Reply-To
 - Schlanker Kontaktabschluss: PLZ, Name, E-Mail, optionale Telefonnummer und DSGVO-Zustimmung
 - Formulartyp-spezifischer Abschluss-Hinweis und CTA
 - Browser-Custom-Events für datensparsame Funnel-Messung
